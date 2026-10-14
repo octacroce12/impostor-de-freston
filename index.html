@@ -54,7 +54,8 @@ p{margin:0}
 .label{font-family:var(--game);font-size:.82rem;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:var(--ink-2)}
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .brand{font-family:var(--display);font-weight:700;font-size:1.2rem;color:#fff;text-shadow:0 2px 0 var(--ink)}
-.nav{display:flex;gap:8px}
+.nav{display:flex;gap:8px;flex-wrap:wrap}
+.nav button{white-space:nowrap}
 .nav button{font-family:var(--game);font-weight:800;font-size:.95rem;background:var(--paper);border:2px solid var(--ink);color:var(--ink);padding:3px 14px 1px;border-radius:99px;cursor:pointer;box-shadow:0 3px 0 var(--ink)}
 .nav button:hover{background:var(--sun)}
 :focus-visible{outline:3px solid var(--sun);outline-offset:3px}
@@ -322,6 +323,88 @@ textarea{font:inherit;width:100%;min-height:84px;padding:10px 12px;border-radius
   .txt{font-size:1rem}
   .bar-hud{gap:8px}
 }
+/* ---------- Niveles ---------- */
+.levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.lvl{font:inherit;text-align:left;cursor:pointer;display:flex;flex-direction:column;padding:0;overflow:hidden;background:var(--paper);color:var(--ink);border:3px solid var(--ink);border-radius:20px;box-shadow:0 6px 0 var(--ink);transition:transform .15s,box-shadow .15s,filter .2s;filter:saturate(.75) brightness(.96);min-width:0}
+.lvl img{display:block;width:100%;aspect-ratio:3/2;object-fit:cover;border-bottom:3px solid var(--ink)}
+.lvl-body{display:flex;flex-direction:column;gap:4px;padding:12px 16px 14px}
+.lvl-tag{font-family:var(--game);font-weight:800;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
+.lvl b{font-family:var(--display);font-size:1.9rem;line-height:1}
+.lvl-d{font-weight:700;color:var(--ink-2);font-size:.97rem}
+.prize{margin-top:4px;align-self:flex-start;font-family:var(--game);font-weight:800;font-size:.85rem;background:#FFF6CC;border:2px solid var(--ink);border-radius:99px;padding:1px 10px 0}
+.lvl:hover{transform:translateY(-3px);filter:none}
+.lvl.on{filter:none;transform:translateY(-4px);box-shadow:0 10px 0 var(--ink),0 0 0 5px var(--sun)}
+.lvl[data-lv="m"].on b{color:var(--q-d)} .lvl[data-lv="g"].on b{color:var(--f-d)}
+.lvl.on .lvl-tag::after{content:" · elegido";color:var(--ok-d)}
+/* Gigante: cita de capítulo en cada globo */
+.cite{align-self:flex-end;font-family:var(--game);font-weight:800;font-size:.72rem;letter-spacing:.06em;color:var(--ink-2);background:var(--paper-2);border:2px solid #C9D6EE;border-radius:99px;padding:0 8px}
+/* Justificación de los encantamientos */
+.clues{grid-column:1 / -1;display:flex;flex-direction:column;gap:12px;background:var(--f-l);border:3px solid var(--ink);border-radius:16px;padding:14px;box-shadow:0 4px 0 var(--f);animation:rise .4s cubic-bezier(.2,.8,.2,1)}
+.clues>.label{color:var(--f-d);text-align:center}
+.clue{display:flex;flex-direction:column;gap:8px}
+.cq{font-family:var(--display);font-style:italic;font-size:1.12rem;line-height:1.25;border-left:4px solid var(--f);padding-left:10px}
+.copts{display:flex;flex-direction:column;gap:8px}
+.copt{font:inherit;font-weight:700;text-align:left;background:var(--paper);color:var(--ink);border:3px solid var(--ink);border-radius:12px;padding:9px 14px;cursor:pointer;box-shadow:0 4px 0 var(--ink);transition:transform .08s,background .15s}
+.copt:hover{background:#fff8d6}
+.copt:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.copt:disabled{cursor:default;transform:none}
+.copt:disabled:hover{background:var(--paper)}
+.copt.right,.copt.right:disabled:hover{background:#DDF7EA;border-color:var(--ok-d);box-shadow:0 4px 0 var(--ok-d)}
+.copt.miss,.copt.miss:disabled:hover{background:#FFE6E3;border-color:var(--bad-d);box-shadow:0 4px 0 var(--bad-d);text-decoration:line-through}
+/* Final: aviso de recompensa y filtro del mapa */
+.teaser{background:#FFF6CC;color:var(--ink);border:3px dashed var(--ink);border-radius:16px;padding:12px 16px;font-weight:700}
+.grp-lv{display:flex;gap:8px;flex-wrap:wrap}
+.grp-lv button{font-family:var(--game);font-weight:800;font-size:.95rem;background:var(--paper);border:2px solid var(--ink);color:var(--ink);padding:3px 14px 1px;border-radius:99px;cursor:pointer;box-shadow:0 3px 0 var(--ink)}
+.grp-lv button.on{background:var(--sun)}
+#music-btn[aria-pressed="false"]{background:#D3DAE8;color:var(--ink-2)}
+/* ---------- Recompensa ---------- */
+body.modal{overflow:hidden}
+.reward{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:16px;background:rgba(12,14,30,.82);animation:fadeIn .4s ease}
+.rw-inner{position:relative;width:min(100%,860px);max-height:calc(100dvh - 32px);overflow:auto;display:flex;flex-direction:column;gap:14px;background:var(--paper);color:var(--ink);border:4px solid var(--ink);border-radius:24px;padding:14px;box-shadow:0 0 0 6px var(--sun),0 30px 60px rgba(0,0,0,.5);animation:rwPop .55s cubic-bezier(.3,1.5,.5,1)}
+.reward[data-kind="g"] .rw-inner{box-shadow:0 0 0 6px var(--f),0 30px 60px rgba(0,0,0,.5)}
+.rw-x{position:absolute;top:10px;right:10px;z-index:4;width:40px;height:40px;border-radius:50%;border:3px solid var(--ink);background:var(--paper);color:var(--ink);font-size:1.5rem;line-height:1;cursor:pointer;box-shadow:0 3px 0 var(--ink)}
+.rw-art{position:relative;border-radius:16px;overflow:hidden;border:3px solid var(--ink);aspect-ratio:3/2;background:#2a1c10;container-type:inline-size}
+.rw-art img{display:block;width:100%;height:100%;object-fit:cover}
+.rw-art.strike{animation:quake .55s ease-out}
+.rw-flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+.rw-art.strike .rw-flash{animation:flashOnce .6s ease-out}
+.rw-art.crown img{animation:glowUp 1.6s ease-out forwards}
+.rw-ms{position:absolute;inset:0;pointer-events:none}
+.pg{position:absolute;display:flex;flex-direction:column;justify-content:center;gap:.5em;text-align:center;color:#3b2410;font-family:var(--display);font-size:clamp(.62rem,2.1cqi,1.05rem);line-height:1.25;padding:2%;overflow:hidden;transform:rotate(-1.5deg)}
+.pg b{display:block;font-size:1.6em;color:#7a1f12;margin-top:.15em}
+.pg small{display:block;font-size:.8em;font-style:italic;margin-top:.5em}
+.pg.l{left:23%;top:31%;width:21%;height:41%}
+.pg.r{left:50.5%;top:30%;width:19.5%;height:42%;transform:rotate(1deg);text-align:left;font-size:clamp(.5rem,1.9cqi,1rem)}
+.rw-art.ink .pg{animation:inkIn 1s ease-out}
+.rw-confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.rw-confetti i{position:absolute;top:-12px;width:9px;height:14px;border-radius:2px;animation:fall 2.6s cubic-bezier(.3,.6,.5,1) forwards}
+.rw-txt{display:flex;flex-direction:column;gap:6px;text-align:center;padding-inline:8px}
+.rw-txt.in{animation:rise .45s cubic-bezier(.2,.8,.2,1)}
+.rw-txt .label{color:var(--f-d)}
+.rw-txt h2{font-size:clamp(1.7rem,5.5vw,2.5rem);color:var(--q-d)}
+.reward[data-kind="g"] .rw-txt h2{color:var(--f-d)}
+.rw-txt p{font-weight:600;max-width:62ch;margin-inline:auto}
+.rw-row{justify-content:center}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes rwPop{from{opacity:0;transform:scale(.85) translateY(20px)}to{opacity:1;transform:none}}
+@keyframes quake{15%{transform:translate(-9px,4px) rotate(-1deg)}30%{transform:translate(8px,-3px) rotate(1deg)}50%{transform:translate(-5px,2px)}70%{transform:translate(3px,-1px)}100%{transform:none}}
+@keyframes flashOnce{0%{opacity:.85}100%{opacity:0}}
+@keyframes glowUp{from{filter:brightness(1)}to{filter:brightness(1.12) saturate(1.15)}}
+@keyframes inkIn{from{opacity:0;filter:blur(3px)}to{opacity:1;filter:none}}
+@keyframes fall{0%{transform:translate(0,0) rotate(0)}100%{transform:translate(var(--x),110cqi) rotate(var(--r));opacity:.2}}
+@media (max-width:560px){
+  .rw-inner{padding:10px;gap:10px}
+  .nav{gap:6px}
+  .nav button{font-size:.82rem;padding:3px 10px 1px}
+  .top{gap:8px}
+  .rank{padding:16px 14px;gap:12px}
+  .rank img{width:72px}
+  .lvl b{font-size:1.6rem}
+}
+@media (prefers-reduced-motion: reduce){
+  .reward,.rw-inner,.rw-txt.in,.rw-art.strike,.rw-art.ink .pg,.clues{animation:none}
+}
+
 /* Final en pantallas angostas: las poses de festejo y derrota son más anchas, así que cada uno ocupa su tercio
    y Frestón flota más arriba y más chico, en el cielo entre los dos. */
 @media (max-width:560px){
@@ -355,6 +438,7 @@ textarea{font:inherit;width:100%;min-height:84px;padding:10px 12px;border-radius
   <header class="top">
     <span class="brand">El impostor de Frestón</span>
     <nav class="nav" aria-label="Secciones">
+      <button type="button" id="music-btn" aria-pressed="true">♪ Música: sí</button>
       <button type="button" id="nav-intro">Inicio</button>
       <button type="button" id="nav-grp">Mapa del grupo</button>
     </nav>
@@ -390,6 +474,17 @@ textarea{font:inherit;width:100%;min-height:84px;padding:10px 12px;border-radius
       <li><b>Acusá al impostor</b><span>Tocá la línea que no corresponde a quien la dice y confirmá.</span></li>
       <li><b>Cuidado con las trampas</b><span>A veces Frestón no tocó nada. Si acusás a un inocente, se apaga una vela. Después, pesá en la balanza qué mueve a cada uno.</span></li>
     </ol>
+    <div class="levels" id="levels" role="radiogroup" aria-label="Nivel de dificultad">
+      <button type="button" class="lvl on" data-lv="m" role="radio" aria-checked="true">
+        <img src="art/nivel_molino.webp" alt="">
+        <span class="lvl-body"><span class="lvl-tag">Nivel 1 · secundario</span><b>Molino</b><span class="lvl-d">Lo que se ve. Un impostor por escena, o ninguno.</span><span class="prize">Recompensa: el ventero te arma caballero</span></span>
+      </button>
+      <button type="button" class="lvl" data-lv="g" role="radio" aria-checked="false">
+        <img src="art/nivel_gigante_card.webp" alt="">
+        <span class="lvl-body"><span class="lvl-tag">Nivel 2 · terciario</span><b>Gigante</b><span class="lvl-d">Lo que hay que saber ver. Citas del texto, de 0 a 2 impostores y líneas fuera de tiempo.</span><span class="prize">Recompensa: Cide Hamete te escribe en su manuscrito</span></span>
+      </button>
+    </div>
+    <p class="hint" id="lvl-rules"></p>
     <div class="setup-card">
       <div class="field">
         <label for="nombre" class="label">Tu nombre</label>
@@ -399,7 +494,6 @@ textarea{font:inherit;width:100%;min-height:84px;padding:10px 12px;border-radius
       <button type="button" class="btn" id="start">¡Desafiar a Frestón!</button>
     </div>
     <div class="row">
-      <p class="hint">8 rondas, 3 velas. Cada encantamiento que descubrís rompe uno de los ocho sellos.</p>
       <button type="button" class="btn ghost" id="intro-grp" style="font-size:.95rem;padding:4px 14px 2px">Armar el mapa del grupo</button>
     </div>
   </section>
@@ -428,6 +522,7 @@ textarea{font:inherit;width:100%;min-height:84px;padding:10px 12px;border-radius
         <p id="fb-why"></p>
         <p class="think" id="fb-scene"></p>
       </div>
+      <div class="clues" id="clues" hidden aria-live="polite"></div>
       <div class="balanza" id="bal">
         <div class="bhead"><img src="art/quijote_face.webp" alt=""><span class="label">La balanza · +50</span><img src="art/sancho_face.webp" alt=""></div>
         <p class="bq" id="bal-q"></p>
@@ -445,12 +540,14 @@ textarea{font:inherit;width:100%;min-height:84px;padding:10px 12px;border-radius
   </section>
 
   <section id="s-res" class="final" hidden>
+    <div class="teaser" id="reward-teaser" hidden><b>La recompensa del nivel te espera.</b> Rompé al menos 5 sellos sin quedarte sin velas para desbloquearla.</div>
     <div class="rank">
       <img id="res-medal" src="art/medalla_oro.webp" alt="">
       <div class="txts">
         <span class="label" id="res-name"></span>
         <h2 id="res-prof"></h2>
         <p id="res-txt"></p>
+        <button type="button" class="btn" id="reward-again" hidden>Ver mi recompensa</button>
       </div>
     </div>
     <div class="scorecard">
@@ -459,6 +556,7 @@ textarea{font:inherit;width:100%;min-height:84px;padding:10px 12px;border-radius
       <div class="stat"><b id="res-combo"></b><span>mejor racha</span></div>
       <div class="stat"><b id="res-lives"></b><span>velas encendidas</span></div>
       <div class="stat"><b id="res-bal"></b><span>miradas comprendidas en la balanza</span></div>
+      <div class="stat" id="res-clues" hidden><b id="res-cl"></b><span>encantamientos bien justificados</span></div>
     </div>
     <section class="retrato" aria-labelledby="ret-t">
       <div class="ret-head">
@@ -501,12 +599,26 @@ textarea{font:inherit;width:100%;min-height:84px;padding:10px 12px;border-radius
       <p class="hint" id="grp-msg" aria-live="polite"></p>
     </div>
     <div id="grp-out" hidden style="display:flex;flex-direction:column;gap:18px">
+      <div class="grp-lv" id="grp-lv" hidden role="group" aria-label="Nivel"><button type="button" data-lv="m">Molino (<span>0</span>)</button><button type="button" data-lv="g">Gigante (<span>0</span>)</button></div>
       <p class="label" id="grp-flag" style="color:var(--on-sky)"></p>
       <div class="scorecard" id="grp-stats"></div>
       <h3 class="sec-title">Qué porcentaje resolvió cada escena</h3>
       <ul class="gbars" id="grp-bars"></ul>
     </div>
   </section>
+</div>
+<div class="reward" id="reward" hidden role="dialog" aria-modal="true" aria-labelledby="rw-title">
+  <div class="rw-inner">
+    <button type="button" class="rw-x" id="rw-close" aria-label="Cerrar">×</button>
+    <div class="rw-art" id="rw-art">
+      <img id="rw-img" alt="">
+      <div class="rw-ms" id="rw-ms" hidden><div class="pg l" id="rw-l"></div><div class="pg r" id="rw-r"></div></div>
+      <div class="rw-flash"></div>
+      <div class="rw-confetti" id="rw-confetti" aria-hidden="true"></div>
+    </div>
+    <div class="rw-txt"><span class="label" id="rw-kicker"></span><h2 id="rw-title"></h2><p id="rw-line"></p></div>
+    <div class="row rw-row"><button type="button" class="btn" id="rw-next">Seguir →</button></div>
+  </div>
 </div>
 <div class="toast" id="toast" role="status"></div>
 
@@ -517,6 +629,7 @@ const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
 const pick=a=>a[Math.floor(Math.random()*a.length)];
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 const WHO={Q:"Don Quijote",S:"Sancho"},FACE={Q:"art/quijote_face.webp",S:"art/sancho_face.webp"};
 const ROMAN=["I","II","III","IV","V","VI","VII","VIII"];
 const ART={
@@ -526,11 +639,6 @@ const ART={
   bg:{intro:"art/bg_dia.webp",group:"art/bg_estudio.webp"}
 };
 
-/* ---------- Rondas ----------
- w = quién habla; d = acotación; t = parlamento.
- fake = Frestón puso esta línea en la boca equivocada (from = quién la dice de verdad);
- trap = línea real que parece sospechosa (why = por qué es real).
- bonus = pregunta de la balanza (qué mueve a uno de los dos); mirror = lo que ve cada uno; mix = las miradas se contagian. */
 const ROUNDS=[
  {ep:"Los molinos",cap:"Capítulo VIII",bg:"art/bg_r1_molinos.webp",
   setup:"En el campo de Montiel aparecen treinta o cuarenta molinos de viento.",
@@ -632,39 +740,186 @@ const ROUNDS=[
   mix:"Las miradas se cruzan: Don Quijote acepta las pruebas de Sancho (tiene hambre y sueño), pero las acomoda a su ideal: «los encantos de ahora no son como los de antes».",
   bonus:{who:"S",ask:"¿Con qué argumento Sancho pone en duda el encantamiento?",opts:["Con pruebas del cuerpo: el hambre y el sueño","Con citas de libros de caballerías","Con un hechizo contrario"],ok:0}}
 ];
-const N=ROUNDS.length,LIMIT=50;
-const FAKE=ROUNDS.map(r=>r.panels.findIndex(p=>p.fake));
-/* resultados: 0 acertó · 1 acusó otro globo · 2 dijo "no tocó nada" y había impostor · 3 acusó en ronda limpia · 4 se acabó el tiempo · 5 no jugada */
+
+/* ---------- Nivel Gigante (terciario) ----------
+ Mismo choque Quijote–Sancho, pero Frestón elige momentos en que cada uno pisa el terreno del otro.
+ Cada escena puede tener 0, 1 o 2 encantamientos:
+   kind "voz":    la línea es real pero la dice el otro (from = quién la dice de verdad).
+   kind "tiempo": la voz es correcta pero la línea pertenece a otro momento de la primera parte.
+ clues = tres razones; la correcta explica el encantamiento desde el contraste entre los dos.
+ src = edición de donde sale la cita: "b" (edición del usuario) o "c" (edición completa, donde la base está cortada). */
+const GIGANTE=[
+ {ep:"La Edad de Oro",cap:"Capítulo XI",bg:"art/bg_g1_cabreros.webp",
+  setup:"De noche, con unos cabreros, alrededor del fuego y de un zaque de vino.",
+  panels:[
+   {w:"Q",src:"b",t:"—Porque veas, Sancho, el bien que en sí encierra la andante caballería…, quiero que aquí a mi lado y en compañía desta buena gente te sientes, y que seas una mesma cosa conmigo, que soy tu amo y natural señor."},
+   {w:"S",src:"b",t:"—¡Gran merced! Pero sé decir a vuestra merced que como yo tuviese bien de comer, tan bien y mejor me lo comería en pie y a mis solas como sentado a par de un emperador."},
+   {w:"Q",src:"b",d:"con un puño de bellotas en la mano",t:"—Dichosa edad y siglos dichosos aquellos a quien los antiguos pusieron nombre de dorados…, porque entonces los que en ella vivían ignoraban estas dos palabras de tuyo y mío."},
+   {w:"S",src:"b",fake:{kind:"tiempo",note:"Es de Sancho, pero del capítulo XX, la noche de los batanes.",
+     clues:[["Fuera de tiempo: el manteo de Sancho sucede después, en la venta (cap. XVII).",1],["Voz cambiada: quejarse de lo sufrido en el cuerpo es propio de Don Quijote.",0],["Voz cambiada: invocar al cielo es un recurso caballeresco que Sancho no usa.",0]]},
+    t:"—…y basta los que ha hecho el cielo con vuestra merced en librarle de ser manteado como yo lo fui."},
+   {w:"S",src:"b",t:"—…mucho mejor me sabe lo que como en mi rincón sin melindres ni respetos, aunque sea pan y cebolla, que los gallipavos de otras mesas…"}],
+  why:"Frestón trajo una queja de Sancho del capítulo XX al XI: el manteo todavía no ocurrió. Lo demás es real, incluida la negativa de Sancho a sentarse junto a su amo.",
+  scene:"Don Quijote ofrece igualdad en nombre de la caballería; Sancho prefiere la libertad concreta de comer a su modo.",
+  mirror:{q:"La Edad de Oro: un mundo sin «tuyo» ni «mío» que la caballería viene a restaurar.",s:"Una comida en paz: mejor sola, en su rincón y sin ceremonias, que en la mesa del amo."},
+  bonus:{who:"S",ask:"¿Por qué Sancho rechaza sentarse junto a su amo?",opts:["Porque prefiere la libertad concreta a un honor que lo incomoda","Porque desprecia a los cabreros","Porque ya comió antes"],ok:0}},
+
+ {ep:"Los yangüeses",cap:"Capítulo XV",bg:"art/bg_g2_yangueses.webp",
+  setup:"En un prado junto a un arroyo, unos arrieros yangüeses muelen a palos a Rocinante… y después a ellos.",
+  panels:[
+   {w:"Q",src:"b",t:"—A lo que yo veo, amigo Sancho, estos no son caballeros, sino gente soez y de baja ralea. Dígolo porque bien me puedes ayudar a tomar la debida venganza del agravio…"},
+   {w:"S",src:"b",t:"—¿Qué diablos de venganza hemos de tomar, si estos son más de veinte, y nosotros no más de dos, y aun quizá nosotros sino uno y medio?"},
+   {w:"S",src:"b",fake:{kind:"voz",from:"Q",note:"Lo dice Don Quijote, molido, para explicar la derrota.",
+     clues:[["Voz cambiada: explicar la paliza por haber violado «las leyes de la caballería» es de Don Quijote; Sancho la explica por el número.",1],["Fuera de tiempo: Don Quijote todavía no fue armado caballero.",0],["Es real: Sancho ya razona como escudero de caballería.",0]]},
+    d:"molido, en el suelo",t:"—Yo me tengo la culpa de todo, que no había de poner mano a la espada contra hombres que no fuesen armados caballeros como yo."},
+   {w:"S",src:"b",trap:1,why:"Es real: el discurso pacifista de Sancho. No es cobardía tonta: razona desde la familia y el perdón.",t:"—Señor, yo soy hombre pacífico, manso, sosegado, y sé disimular cualquiera injuria, porque tengo mujer y hijos que sustentar y criar."},
+   {w:"S",src:"b",trap:1,why:"Es real: Sancho perdona por anticipado, con una fórmula casi jurídica.",t:"—…y que desde aquí para delante de Dios perdono cuantos agravios me han hecho y han de hacer, ora me los haya hecho o haga o haya de hacer persona alta o baja, rico o pobre…"}],
+  why:"La culpa por «no haber puesto mano a la espada contra hombres que no fuesen armados caballeros» es de Don Quijote. Sancho, en cambio, cuenta los enemigos y perdona por adelantado.",
+  scene:"Para Don Quijote, la derrota tiene una causa moral dentro de la caballería; para Sancho, una causa aritmética: eran veinte.",
+  mirror:{q:"Un agravio que vengar… y una ley caballeresca que explica el castigo.",s:"Veinte arrieros con estacas: mejor perdonar, curarse y cuidar a la familia."},
+  bonus:{who:"S",ask:"¿Desde dónde razona Sancho su negativa a pelear?",opts:["Desde sus obligaciones concretas: mujer, hijos y paz","Desde el miedo a romper las leyes de la caballería","Desde la obediencia a su amo"],ok:0}},
+
+ {ep:"Los rebaños",cap:"Capítulo XVIII",clean:1,bg:"art/bg_g3_rebanos.webp",
+  setup:"Dos grandes polvaredas avanzan por el camino desde lados opuestos.",
+  panels:[
+   {w:"S",src:"b",trap:1,why:"Es real: el narrador cuenta que «Sancho lo vino a creer». Por un momento el escudero mira con los ojos de su amo.",t:"—Señor, pues ¿qué hemos de hacer nosotros?"},
+   {w:"Q",src:"b",t:"—¿Qué? Favorecer y ayudar a los menesterosos y desvalidos. Y has de saber, Sancho, que este que viene por nuestra frente le conduce y guía el grande emperador Alifanfarón, señor de la grande isla Trapobana."},
+   {w:"S",src:"b",trap:1,why:"Es real: Sancho pregunta por los motivos de la guerra como si fuera cierta.",t:"—Pues ¿por qué se quieren tan mal estos dos señores?"},
+   {w:"Q",src:"b",t:"—¿No oyes el relinchar de los caballos, el tocar de los clarines, el ruido de los atambores?"},
+   {w:"S",src:"b",t:"—No oigo otra cosa sino muchos balidos de ovejas y carneros."},
+   {w:"Q",src:"c",d:"maltrecho, después de la carga",t:"—Como eso puede desparecer y contrahacer aquel ladrón del sabio mi enemigo. Sábete, Sancho, que es muy fácil cosa a los tales hacernos parecer lo que quieren."}],
+  why:"Frestón no tocó nada. Lo que parecía raro es real: Sancho llega a creer en los ejércitos y pregunta por los motivos de la guerra, hasta que el oído lo devuelve a las ovejas.",
+  scene:"Don Quijote ve y oye ejércitos; Sancho primero se contagia y después vuelve a lo que le dicen los sentidos.",
+  mirror:{q:"Dos ejércitos: Alifanfarón de la Trapobana contra Pentapolín del Arremangado Brazo.",s:"Dos manadas de ovejas y carneros… aunque por un rato él también creyó en la guerra."},
+  mix:"Contagio: el narrador dice que «Sancho lo vino a creer». El escudero entra en la ficción de su amo y sale por los sentidos: oye balidos.",
+  bonus:{who:"S",ask:"¿Qué saca a Sancho de la ficción de su amo?",opts:["Los sentidos: oye balidos, no clarines","Un sabio encantador","La orden de Don Quijote de retirarse"],ok:0}},
+
+ {ep:"La Triste Figura",cap:"Capítulo XIX",bg:"art/bg_g4_triste.webp",
+  setup:"De noche, después de la aventura del cuerpo muerto, a la luz de una hacha encendida.",
+  panels:[
+   {w:"S",src:"b",trap:1,why:"Es real: Sancho razona dentro de la lógica caballeresca y le reprocha a su amo haber roto su juramento.",t:"—Paréceme, señor mío, que todas estas desventuras… han sido pena del pecado cometido por vuestra merced contra la orden de su caballería, no habiendo cumplido el juramento que hizo de no comer pan a manteles."},
+   {w:"S",src:"c",t:"—…verdaderamente tiene vuestra merced la más mala figura de poco acá que jamás he visto; y débelo de haber causado, o ya el cansancio deste combate, o ya la falta de las muelas y dientes."},
+   {w:"Q",src:"c",trap:1,why:"Es real: Don Quijote convierte la ocurrencia de Sancho en algo que dictó el sabio que escribe su historia.",t:"—No es eso, sino que el sabio a cuyo cargo debe de estar el escribir la historia de mis hazañas… te habrá puesto en la lengua y en el pensamiento ahora que me llamases el Caballero de la Triste Figura."},
+   {w:"S",src:"c",fake:{kind:"voz",from:"Q",note:"Lo dice Don Quijote: es su escudo y su nuevo nombre.",
+     clues:[["Voz cambiada: pintar una «triste figura» en su escudo para que le cuadre el nombre es de Don Quijote; Sancho no tiene escudo ni nombre de caballero.",1],["Fuera de tiempo: el apodo aparece recién en Sierra Morena.",0],["Es real: Sancho propone el escudo para burlarse.",0]]},
+    t:"—Y para que mejor me cuadre tal nombre, determino de hacer pintar, cuando haya lugar, en mi escudo una muy triste figura."},
+   {w:"S",src:"c",t:"—No hay para qué gastar tiempo y dineros en hacer esa figura, sino lo que se ha de hacer es que vuestra merced descubra la suya y dé rostro a los que le miraren."}],
+  why:"«En mi escudo» lo delata: el escudo y el nombre de caballero son de Don Quijote. Sancho responde justo después que no hace falta pintar nada: basta con mostrar la cara.",
+  scene:"Sancho bautiza a su amo mirándolo a la luz de una hacha; Don Quijote convierte el apodo en un destino escrito por un sabio.",
+  mirror:{q:"Un nombre de caballero que le inspira el sabio que escribe su historia.",s:"Una cara flaca, sin muelas y con hambre: el apodo nace de mirarlo."},
+  mix:"Contagio: Sancho le reprocha a su amo haber roto un juramento de caballero y le pone un nombre de caballero. Pero lo hace desde lo que ve: la cara.",
+  bonus:{who:"Q",ask:"¿Cómo explica Don Quijote que Sancho haya dado con ese nombre?",opts:["Como obra del sabio que escribe su historia","Como una burla que no piensa aceptar","Como un consejo de Dulcinea"],ok:0}},
+
+ {ep:"La Torralba",cap:"Capítulo XX",bg:"art/bg_r3_batanes.webp",
+  setup:"La noche de los batanes. Sancho ata a Rocinante y entretiene a su amo con un cuento.",
+  panels:[
+   {w:"S",src:"b",trap:1,why:"Es real: en esta noche (cap. XX) Sancho sí recuerda el manteo, que ya ocurrió en el XVII.",t:"—…quien busca el peligro perece en él. Así que no es bien tentar a Dios acometiendo tan desaforado hecho…, y basta los que ha hecho el cielo con vuestra merced en librarle de ser manteado como yo lo fui."},
+   {w:"Q",src:"b",t:"—Sancho amigo, has de saber que yo nací por querer del cielo en esta nuestra edad de hierro para resucitar en ella la de oro, o la dorada, como suele llamarse."},
+   {w:"Q",src:"b",fake:{kind:"tiempo",note:"Es de Don Quijote, pero de Sierra Morena (cap. XXV).",
+     clues:[["Fuera de tiempo: la bacía todavía no apareció; el yelmo de Mambrino llega en el capítulo XXI.",1],["Voz cambiada: hablar de lo que «a ti te parece» es propio de Sancho.",0],["Es real: Don Quijote ya discute el yelmo esta noche.",0]]},
+    t:"—…eso que a ti te parece bacía de barbero me parece a mí el yelmo de Mambrino, y a otro le parecerá otra cosa."},
+   {w:"S",src:"b",t:"—…había un pastor cabrerizo…, se llamaba Lope Ruiz; y este Lope Ruiz andaba enamorado de una pastora que se llamaba Torralba; la cual pastora llamada Torralba era hija de un ganadero rico…"},
+   {w:"Q",src:"b",t:"—Si desa manera cuentas tu cuento, Sancho, repitiendo dos veces lo que vas diciendo, no acabarás en dos días: dilo seguidamente y cuéntalo como hombre de entendimiento."},
+   {w:"Q",src:"b",fake:{kind:"voz",from:"S",note:"Lo responde Sancho, defendiendo su manera de contar.",
+     clues:[["Voz cambiada: defender cómo «se cuentan en mi tierra todas las consejas» es de Sancho, el narrador oral; Don Quijote pide contar «como hombre de entendimiento».",1],["Fuera de tiempo: el cuento de la Torralba es de otra noche.",0],["Es real: Don Quijote acepta la manera de contar de Sancho.",0]]},
+    t:"—De la misma manera que yo lo cuento se cuentan en mi tierra todas las consejas, y yo no sé contarlo de otra, ni es bien que vuestra merced me pida que haga usos nuevos."}],
+  why:"Dos encantamientos: el yelmo de Mambrino todavía no apareció (llega en el XXI) y la defensa de «las consejas de mi tierra» es de Sancho, no de Don Quijote. La queja del manteo, en cambio, acá es real.",
+  scene:"Hasta para contar se oponen: Don Quijote quiere un relato ordenado, como de libro; Sancho defiende la narración oral de su tierra.",
+  mirror:{q:"Una edad de hierro que él vino a convertir en edad de oro, y un cuento que debe contarse con orden.",s:"Un peligro que conviene no tentar, y un cuento que se cuenta como en su pueblo."},
+  bonus:{who:"S",ask:"¿Qué defiende Sancho cuando su amo critica su manera de contar?",opts:["La tradición oral de su tierra frente a la norma del libro","Que el cuento es verdadero","Que su amo no sabe escuchar"],ok:0}},
+
+ {ep:"Bacía o yelmo",cap:"Capítulo XXV",bg:"art/bg_r6_morena.webp",
+  setup:"En Sierra Morena, antes de la penitencia, Sancho pierde la paciencia.",
+  panels:[
+   {w:"Q",src:"b",t:"—Pero dime, Sancho, ¿traes bien guardado el yelmo de Mambrino, que ya vi que le alzaste del suelo…?"},
+   {w:"S",src:"b",t:"—Vive Dios, señor Caballero de la Triste Figura, que no puedo sufrir ni llevar en paciencia algunas cosas que vuestra merced dice…, que todo debe de ser cosa de viento y mentira, y todo pastraña, o patraña, o como lo llamáremos."},
+   {w:"S",src:"b",t:"—…quien oyere decir a vuestra merced que una bacía de barbero es el yelmo de Mambrino…, ¿qué ha de pensar sino que quien tal dice y afirma debe de tener güero el juicio? La bacía yo la llevo en el costal."},
+   {w:"Q",src:"b",trap:1,why:"Es real: el idealista admite que cada uno ve distinto, aunque lo explica con encantadores.",t:"—…eso que a ti te parece bacía de barbero me parece a mí el yelmo de Mambrino, y a otro le parecerá otra cosa."},
+   {w:"S",src:"b",fake:{kind:"voz",from:"Q",note:"Sigue hablando Don Quijote.",
+     clues:[["Voz cambiada: atribuir a un «sabio que es de mi parte» que el yelmo parezca bacía es de Don Quijote; Sancho acaba de decir que la bacía la lleva en el costal.",1],["Fuera de tiempo: el sabio protector aparece al final de la primera parte.",0],["Es real: Sancho se contagia y defiende el yelmo.",0]]},
+    t:"—Y fue rara providencia del sabio que es de mi parte hacer que parezca bacía a todos lo que real y verdaderamente es yelmo de Mambrino."}],
+  why:"El «sabio que es de mi parte» es el protector de Don Quijote: la línea sigue su razonamiento. Sancho acababa de decir que la bacía la lleva en el costal y que todo es «viento y mentira».",
+  scene:"El choque más explícito de la primera parte: el mismo objeto, dos nombres, y la idea de que «a otro le parecerá otra cosa».",
+  mirror:{q:"El yelmo de Mambrino, que los encantadores disfrazan… y la idea de que cada uno ve distinto.",s:"Una bacía de barbero en el costal, prueba de que todo es «viento y mentira»."},
+  mix:"El idealista formula la perspectiva: «a otro le parecerá otra cosa». Es el germen del baciyelmo de los capítulos XLIV–XLV.",
+  bonus:{who:"Q",ask:"¿Cómo resuelve Don Quijote la contradicción entre bacía y yelmo?",opts:["Admite que cada uno ve distinto, pero lo explica con encantadores","Reconoce que es una bacía y se la devuelve al barbero","Dice que Sancho es un encantador"],ok:0}},
+
+ {ep:"Las nuevas de Dulcinea",cap:"Capítulo XXXI",clean:1,bg:"art/bg_g7_toboso.webp",
+  setup:"Sancho vuelve de su embajada y cuenta cómo encontró a Dulcinea… aunque nunca llegó al Toboso.",
+  panels:[
+   {w:"Q",src:"b",t:"—Llegaste, ¿y qué hacía aquella reina de la hermosura? A buen seguro que la hallaste ensartando perlas o bordando alguna empresa con oro de cañutillo para este su cautivo caballero."},
+   {w:"S",src:"b",trap:1,why:"Es real… y es mentira: Sancho nunca fue al Toboso. Inventa, pero inventa desde lo cotidiano.",t:"—No la hallé sino ahechando dos hanegas de trigo en un corral de su casa."},
+   {w:"Q",src:"b",t:"—Pues haz cuenta que los granos de aquel trigo eran granos de perlas, tocados de sus manos. Y si miraste, amigo, el trigo ¿era candeal o trechel?"},
+   {w:"S",src:"b",t:"—No era sino rubión."},
+   {w:"Q",src:"b",t:"—…¿no sentiste un olor sabeo, una fragancia aromática y un no sé qué de bueno, que yo no acierto a dalle nombre?"},
+   {w:"S",src:"b",trap:1,why:"Es real: la Dulcinea inventada por Sancho huele a trabajo, no a ámbar.",t:"—Lo que sé decir es que sentí un olorcillo algo hombruno, y debía de ser que ella, con el mucho ejercicio, estaba sudada y algo correosa."}],
+  why:"Frestón no tocó nada. La trampa es otra: Sancho miente, porque nunca llegó al Toboso. Pero hasta su invención está hecha de realidad (trigo rubión, sudor, corral), y Don Quijote la idealiza palabra por palabra.",
+  scene:"Cada detalle que inventa Sancho, Don Quijote lo traduce: el trigo en perlas, el rubión en candeal, el sudor en ámbar.",
+  mirror:{q:"Una reina que ensarta perlas y huele a ámbar desleído.",s:"Una labradora que ahecha trigo rubión y huele a sudor… inventada por él mismo."},
+  mix:"Contagio: Sancho fabula como su amo (inventa una visita que no hizo), pero su ficción está hecha de realidad. Don Quijote la corrige hacia el ideal.",
+  bonus:{who:"S",ask:"¿Qué tiene de particular la Dulcinea que inventa Sancho?",opts:["Que, aun inventada, está hecha de trabajo y cuerpo","Que es igual a la que imagina su amo","Que es una princesa encantada"],ok:0}},
+
+ {ep:"Los encantos de ahora",cap:"Capítulos XLVII–XLIX",bg:"art/bg_g8_canonigo.webp",
+  setup:"Don Quijote viaja enjaulado en un carro de bueyes. Sancho sospecha y discute.",
+  panels:[
+   {w:"Q",src:"b",trap:1,why:"Es real: hasta Don Quijote duda. Los bueyes no encajan con los encantamientos de los libros.",d:"dentro de la jaula",t:"—…pero que me lleven a mí agora sobre un carro de bueyes, ¡vive Dios que me pone en confusión! Pero quizá la caballería y los encantos destos nuestros tiempos deben de seguir otro camino que siguieron los antiguos."},
+   {w:"S",src:"b",t:"—…¿cómo quieren hacerme a mí entender que va encantado? Pues yo he oído decir a muchas personas que los encantados ni comen, ni duermen, ni hablan, y mi amo, si no le van a la mano, hablará más que treinta procuradores."},
+   {w:"Q",src:"b",fake:{kind:"voz",from:"S",note:"Es la conclusión del razonamiento de Sancho.",
+     clues:[["Voz cambiada: deducir el encantamiento de comer, beber y dormir es el silogismo «del cuerpo» de Sancho; Don Quijote le responde a continuación.",1],["Fuera de tiempo: esta discusión es de la venta, no del camino.",0],["Es real: Don Quijote admite que no va encantado.",0]]},
+    t:"—De donde se viene a sacar que los que no comen, ni beben, ni duermen, ni hacen las obras naturales que yo digo, estos tales están encantados."},
+   {w:"Q",src:"b",t:"—Verdad dices, Sancho, pero ya te he dicho que hay muchas maneras de encantamentos, y podría ser que con el tiempo se hubiesen mudado de unos en otros… Yo sé y tengo para mí que voy encantado."},
+   {w:"S",src:"c",fake:{kind:"tiempo",note:"Es de Sancho, pero se lo dice a su mujer al llegar a la aldea (cap. LII).",
+     clues:[["Fuera de tiempo: Sancho lo dice al volver a casa, a Juana Panza, cuando la aventura ya terminó (cap. LII).",1],["Voz cambiada: elogiar la vida de aventuras es exclusivo de Don Quijote.",0],["Es real: Sancho se lo dice al canónigo en el camino.",0]]},
+    t:"—…no hay cosa más gustosa en el mundo que ser un hombre honrado escudero de un caballero andante, buscador de aventuras."}],
+  why:"Dos encantamientos: el silogismo de comer, beber y dormir es de Sancho (Don Quijote le contesta «Verdad dices, Sancho»), y el elogio de la vida de escudero Sancho se lo dice a su mujer en el capítulo LII, ya de vuelta en la aldea.",
+  scene:"Sancho prueba con el cuerpo que su amo no está encantado; Don Quijote acepta las pruebas, pero cambia la teoría: «los encantos de ahora» son otros.",
+  mirror:{q:"Un encantamiento moderno: los encantos cambiaron con los tiempos.",s:"Un hombre que come, bebe, duerme y habla «más que treinta procuradores»: no está encantado."},
+  mix:"El choque final: ninguno convence al otro, pero los dos se mueven. Don Quijote duda y ajusta su teoría; Sancho, que lo niega todo, terminará elogiando la vida de escudero.",
+  bonus:{who:"Q",ask:"¿Cómo responde Don Quijote a las pruebas de Sancho?",opts:["Las acepta, pero cambia la teoría: los encantamientos de ahora son distintos","Las rechaza y dice que Sancho miente","Reconoce que no está encantado"],ok:0}}
+];
+
+const LEVELS={
+  m:{key:"m",name:"Molino",rounds:ROUNDS,themePrefix:"r"},
+  g:{key:"g",name:"Gigante",rounds:GIGANTE,themePrefix:"g"}
+};
+let LV=LEVELS[store.get("fq-level")==="g"?"g":"m"];
+let RS=LV.rounds;
+const N=8,LIMIT_M=50,LIMIT_G=75;
+const fakesOf=R=>R.panels.map((p,i)=>p.fake?i:-1).filter(i=>i>=0);
+const fromOf=p=>p.fake&&p.fake.from?p.fake.from:p.from;
+
+/* precarga */
+setTimeout(()=>[...ROUNDS,...GIGANTE].map(r=>r.bg).concat([ART.bg.group,ART.F.mad,ART.F.laugh,ART.Q.win,ART.Q.lose,ART.S.win,ART.S.lose,"art/sello_roto.webp","art/vela_apagada.webp","art/premio_ventero.webp","art/premio_manuscrito.webp"]).forEach(u=>{const i=new Image();i.src=u}),1500);
 
 /* ---------- Paleta que acompaña el recorrido ---------- */
 const THEMES={
-  intro:["#E8923A","#B9472B","rgba(255,236,190,.55)"],          /* mañana manchega: dorado y terracota */
-  r0:["#E6A93F","#B8651F","rgba(255,244,200,.55)"],             /* molinos: trigo al sol */
-  r1:["#E07B45","#9E3B26","rgba(255,220,180,.45)"],             /* venta: tarde de tejas */
-  r2:["#36508F","#1A1F4D","rgba(255,190,210,.30)"],             /* batanes: noche que amanece */
-  r3:["#4E9C8E","#2A5E57","rgba(220,255,240,.40)"],             /* yelmo: lluvia y arcoíris */
-  r4:["#D9733A","#8F3420","rgba(255,220,170,.45)"],             /* galeotes: polvo ocre */
-  r5:["#C9785A","#6E3B33","rgba(255,210,190,.40)"],             /* Sierra Morena: granito rosado */
-  r6:["#D2729E","#6E3A93","rgba(255,220,250,.50)"],             /* Micomicona: rosa mágico */
-  r7:["#E57A3C","#5E2B63","rgba(255,200,150,.45)"],             /* jaula: atardecer que se vuelve violeta */
-  win:["#F0B43C","#B86A1A","rgba(255,250,210,.65)"],            /* final: Frestón derrotado */
-  lose:["#6B3FA8","#2A1650","rgba(200,160,255,.35)"],           /* final: gana Frestón */
-  group:["#4B2E83","#22144A","rgba(200,170,255,.30)"]           /* estudio de Frestón */
+  intro:["#E8923A","#B9472B","rgba(255,236,190,.55)"],
+  r0:["#E6A93F","#B8651F","rgba(255,244,200,.55)"], r1:["#E07B45","#9E3B26","rgba(255,220,180,.45)"],
+  r2:["#36508F","#1A1F4D","rgba(255,190,210,.30)"], r3:["#4E9C8E","#2A5E57","rgba(220,255,240,.40)"],
+  r4:["#D9733A","#8F3420","rgba(255,220,170,.45)"], r5:["#C9785A","#6E3B33","rgba(255,210,190,.40)"],
+  r6:["#D2729E","#6E3A93","rgba(255,220,250,.50)"], r7:["#E57A3C","#5E2B63","rgba(255,200,150,.45)"],
+  g0:["#3B3F8F","#1C1838","rgba(255,170,90,.35)"],  g1:["#5E9E4A","#2F5A2A","rgba(230,255,200,.40)"],
+  g2:["#D9A441","#8A5A1C","rgba(255,240,190,.50)"], g3:["#2E3470","#120F2E","rgba(255,170,90,.28)"],
+  g4:["#36508F","#1A1F4D","rgba(255,190,210,.30)"], g5:["#C9785A","#6E3B33","rgba(255,210,190,.40)"],
+  g6:["#E3A63C","#A0561C","rgba(255,245,200,.55)"], g7:["#57A06A","#2B5E46","rgba(220,255,230,.40)"],
+  win:["#F0B43C","#B86A1A","rgba(255,250,210,.65)"], lose:["#6B3FA8","#2A1650","rgba(200,160,255,.35)"],
+  group:["#4B2E83","#22144A","rgba(200,170,255,.30)"]
 };
 function setTheme(k){const t=THEMES[k]||THEMES.intro,s=document.body.style;s.setProperty("--bg1",t[0]);s.setProperty("--bg2",t[1]);s.setProperty("--glow",t[2]);document.documentElement.style.background=t[1]}
-
-/* precarga de ilustraciones */
-const preload=[...ROUNDS.map(r=>r.bg),ART.bg.group,ART.F.mad,ART.F.laugh,ART.Q.win,ART.Q.lose,ART.S.win,ART.S.lose,"art/sello_roto.webp","art/vela_apagada.webp"];
-setTimeout(()=>preload.forEach(u=>{const i=new Image();i.src=u}),1200);
 
 /* ---------- Frestón habla ---------- */
 const LINES={
  intro:["Yo, Frestón, sabio encantador, metí mano en sus diálogos. ¿Los conocés tan bien como creés?",
         "Molinos, ventas, bacías… Cambié una cosita por aquí y otra por allá. A ver si te das cuenta."],
+ introG:["¿El Gigante? Acá no alcanza con saber quién es el loco y quién el cuerdo. Cada uno pisa el terreno del otro.",
+         "En este nivel juego en serio: puede no haber ningún impostor, o puede haber dos. Y algunos están fuera de tiempo."],
  start:["Leé con cuidado. O no.","Esta vez fui sutil.","¿Seguro que eso lo dijo quien creés?","Mis encantamientos no se ven a simple vista.","Hasta Sancho dudaría de esta."],
+ startG:["¿Uno, dos… o ninguno? Adiviná.","Acá cada uno habla un poco como el otro. Cuidado.","No te fíes del estereotipo: yo lo uso a mi favor.","Fijate también en el cuándo, no solo en el quién."],
  ok:["¡Maldición! Rompiste mi sello.","¿Cómo te diste cuenta? Debe ser obra de otro encantador.","Hmpf. Suerte de principiante.","Lo admito: ese fue un descuido mío."],
  cleanOk:["Esta vez no toqué nada… y no caíste. Hmpf.","Bien. Ahí todo era verdad. Qué aburrido."],
  wrongReal:["¡Ja! Acusaste a un inocente. Esa línea era verdad.","Desconfiás de lo que no debías. Una vela menos."],
+ wrongTrap:["¡Ja! Juzgaste por el estereotipo. Esa línea es real: en el libro, cada uno se sale a veces de su papel.","Caíste: creíste que eso no podía decirlo él. Cervantes es más astuto que vos."],
+ partial:["Encontraste uno… pero había más. Una vela menos.","Te quedaste a mitad de camino. Había otro encantamiento."],
  wrongClean:["¡Ja! Ahí no toqué nada. Viste fantasmas, como tu caballero."],
  missed:["Estaba ahí, delante de tus ojos. ¡Ja!","Te lo cambié en la cara y no lo viste."],
  time:["El tiempo también es mío.","Se te escurrió el reloj. Una vela menos."],
@@ -673,6 +928,75 @@ const LINES={
  group:["Bienvenidos a mi estudio. Veamos cuántos de mis sellos rompió tu grupo…"]
 };
 function say(t){const p=$("#say");p.textContent=t;p.classList.remove("pop");void p.offsetWidth;p.classList.add("pop")}
+
+/* ---------- Música: Folías de España (dominio público), sintetizada ---------- */
+const Music=(()=>{
+  let ctx=null,master=null,timer=null,next=0,step=0,on=store.get("fq-music")!=="off",mode="game";
+  // Progresión de la folía (re menor): i V i VII III VII i V | i V i VII III VII i-V i
+  const D=38,PROG=[[D,D+3,D+7],[D+7,D+11,D+14],[D,D+3,D+7],[D-2,D+2,D+5],[D+3,D+7,D+10],[D-2,D+2,D+5],[D,D+3,D+7],[D+7,D+11,D+14],
+                   [D,D+3,D+7],[D+7,D+11,D+14],[D,D+3,D+7],[D-2,D+2,D+5],[D+3,D+7,D+10],[D-2,D+2,D+5],[D+7,D+11,D+14],[D,D+3,D+7]];
+  // melodía original en ritmo de zarabanda (negra, blanca)
+  const MEL=[[62,61],[64,64],[65,64],[62,60],[65,67],[69,67],[65,64],[64,61],
+             [62,64],[61,64],[65,67],[64,62],[60,65],[64,62],[61,64],[62,62]];
+  const hz=m=>440*Math.pow(2,(m-69)/12);
+  function pluck(t,m,vol,dur,bright){
+    const o=ctx.createOscillator(),o2=ctx.createOscillator(),g=ctx.createGain(),f=ctx.createBiquadFilter();
+    o.type="triangle";o2.type="sawtooth";o.frequency.value=hz(m);o2.frequency.value=hz(m)*1.002;
+    f.type="lowpass";f.frequency.setValueAtTime(bright||2600,t);f.frequency.exponentialRampToValueAtTime(500,t+dur);
+    const g2=ctx.createGain();g2.gain.value=.25;
+    g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.006);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    o.connect(f);o2.connect(g2);g2.connect(f);f.connect(g);g.connect(master);
+    o.start(t);o2.start(t);o.stop(t+dur+.05);o2.stop(t+dur+.05);
+  }
+  function tick(t,vol){ // castañuela suave
+    const len=.04,buf=ctx.createBuffer(1,ctx.sampleRate*len,ctx.sampleRate),d=buf.getChannelData(0);
+    for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,6);
+    const s=ctx.createBufferSource(),f=ctx.createBiquadFilter(),g=ctx.createGain();
+    s.buffer=buf;f.type="bandpass";f.frequency.value=3200;f.Q.value=2;g.gain.value=vol;
+    s.connect(f);f.connect(g);g.connect(master);s.start(t);
+  }
+  function schedule(){
+    const bpm=mode==="reward"?128:96,beat=60/bpm;
+    while(next<ctx.currentTime+.3){
+      const bar=Math.floor(step/3)%16,b=step%3,ch=PROG[bar];
+      if(b===0){ // bajo + acorde rasgueado
+        pluck(next,ch[0]-12,.16,beat*2.6,900);
+        ch.forEach((m,k)=>pluck(next+k*.018,m+12,.05,beat*2.2,2200));
+        pluck(next,MEL[bar][0]+12*(mode==="reward"?1:0),.09,beat*1.1,3000);
+        tick(next,.05);
+      }else if(b===1){
+        pluck(next,MEL[bar][1]+12*(mode==="reward"?1:0),.09,beat*1.9,3000);
+        ch.forEach((m,k)=>pluck(next+k*.014,m+12,.03,beat*1.5,1800));
+        tick(next,.08);
+      }else{
+        if(mode==="reward")ch.forEach((m,k)=>pluck(next+k*.012,m+24,.025,beat,2400));
+        tick(next,.03);
+      }
+      next+=beat;step++;
+    }
+  }
+  function start(){
+    if(!on)return;
+    try{
+      if(!ctx){ctx=new (window.AudioContext||window.webkitAudioContext)();master=ctx.createGain();master.gain.value=0;master.connect(ctx.destination)}
+      if(ctx.state==="suspended")ctx.resume();
+      master.gain.cancelScheduledValues(ctx.currentTime);master.gain.setTargetAtTime(.55,ctx.currentTime,.4);
+      if(!timer){next=ctx.currentTime+.08;timer=setInterval(schedule,90)}
+    }catch(e){}
+  }
+  function stop(){if(!ctx)return;master.gain.setTargetAtTime(0,ctx.currentTime,.15);clearInterval(timer);timer=null}
+  function sfx(kind){
+    if(!on||!ctx)return;const t=ctx.currentTime+.02;
+    const seq=kind==="ok"?[74,78,81,86]:kind==="bad"?[70,66,63,58]:[74,77,81,86,89];
+    seq.forEach((m,i)=>pluck(t+i*.08,m,.12,.5,3600));
+  }
+  function setMode(m){mode=m}
+  function toggle(){on=!on;store.set("fq-music",on?"on":"off");if(on)start();else stop();return on}
+  return {start,stop,sfx,toggle,setMode,get on(){return on}};
+})();
+function drawMusicBtn(){const b=$("#music-btn");b.setAttribute("aria-pressed",Music.on);b.textContent=Music.on?"♪ Música: sí":"♪ Música: no"}
+$("#music-btn").addEventListener("click",()=>{Music.toggle();drawMusicBtn()});
+drawMusicBtn();
 
 /* ---------- Fondo con fundido ---------- */
 let bgFront=$("#bgA"),bgBack=$("#bgB");
@@ -684,9 +1008,7 @@ function setBg(src){
 }
 
 /* ---------- Sellos y velas ---------- */
-function buildSeals(){
-  $("#seals").innerHTML=ROUNDS.map((r,i)=>`<img class="seal" data-i="${i}" src="art/sello.webp" alt="">`).join("");
-}
+function buildSeals(){$("#seals").innerHTML=Array.from({length:N},(r,i)=>`<img class="seal" data-i="${i}" src="art/sello.webp" alt="">`).join("")}
 function setSeal(i,st){const g=document.querySelector(`#seals .seal[data-i="${i}"]`);if(!g)return;g.classList.remove("now","won","lost");if(st)g.classList.add(st);g.src=st==="won"?"art/sello_roto.webp":"art/sello.webp"}
 function resetSeals(){for(let i=0;i<N;i++)setSeal(i,"")}
 function sealLabel(){const w=document.querySelectorAll("#seals .seal.won").length;$("#seals").setAttribute("aria-label",`${w} de 8 sellos rotos`)}
@@ -699,29 +1021,22 @@ function drawCandles(n){
 
 /* ---------- Chispas ---------- */
 const stage=$("#stage"),cv=$("#fx"),ctx=cv.getContext("2d");
-let W=0,H=0;
-const parts=[];
+let W=0,H=0;const parts=[];
 const COL={gold:"255,210,63",violet:"168,120,255",white:"255,255,255"};
 function resize(){const r=stage.getBoundingClientRect(),d=Math.min(2,window.devicePixelRatio||1);W=r.width;H=r.height;cv.width=Math.round(W*d);cv.height=Math.round(H*d);ctx.setTransform(d,0,0,d,0,0)}
 function pt(el,fy){const a=stage.getBoundingClientRect(),b=el.getBoundingClientRect();return [b.left-a.left+b.width/2,b.top-a.top+b.height*(fy==null?.32:fy)]}
-function stream(fromEl,toEl,c,count){
-  const [x0,y0]=pt(fromEl),[x1,y1]=pt(toEl);count=Math.round((count||36)*(reduce?.5:1));
-  for(let i=0;i<count;i++)parts.push({x0,y0,x1:x1+(Math.random()-.5)*40,y1:y1+(Math.random()-.5)*40,cx:(x0+x1)/2+(Math.random()-.5)*90,cy:Math.min(y0,y1)-50-Math.random()*70,t:-i*.03,sp:.014+Math.random()*.01,c,r:2+Math.random()*2.6,star:Math.random()<.3});
-}
-function burst(el,c,count,fy){
-  const [x,y]=pt(el,fy);count=Math.round((count||40)*(reduce?.5:1));
-  for(let i=0;i<count;i++){const a=Math.random()*Math.PI*2,d=40+Math.random()*100;parts.push({x0:x,y0:y,x1:x+Math.cos(a)*d,y1:y+Math.sin(a)*d,cx:x+Math.cos(a)*d*.5,cy:y+Math.sin(a)*d*.5-20,t:0,sp:.022+Math.random()*.02,c,r:1.8+Math.random()*2.6,star:Math.random()<.35})}
-}
+function stream(fromEl,toEl,c,count){const [x0,y0]=pt(fromEl),[x1,y1]=pt(toEl);count=Math.round((count||36)*(reduce?.5:1));
+  for(let i=0;i<count;i++)parts.push({x0,y0,x1:x1+(Math.random()-.5)*40,y1:y1+(Math.random()-.5)*40,cx:(x0+x1)/2+(Math.random()-.5)*90,cy:Math.min(y0,y1)-50-Math.random()*70,t:-i*.03,sp:.014+Math.random()*.01,c,r:2+Math.random()*2.6,star:Math.random()<.3})}
+function burst(el,c,count,fy){const [x,y]=pt(el,fy);count=Math.round((count||40)*(reduce?.5:1));
+  for(let i=0;i<count;i++){const a=Math.random()*Math.PI*2,d=40+Math.random()*100;parts.push({x0:x,y0:y,x1:x+Math.cos(a)*d,y1:y+Math.sin(a)*d,cx:x+Math.cos(a)*d*.5,cy:y+Math.sin(a)*d*.5-20,t:0,sp:.022+Math.random()*.02,c,r:1.8+Math.random()*2.6,star:Math.random()<.35})}}
 function star(x,y,r){ctx.beginPath();for(let k=0;k<8;k++){const a=k*Math.PI/4,rr=k%2?r*.4:r*1.6;ctx.lineTo(x+Math.cos(a)*rr,y+Math.sin(a)*rr)}ctx.closePath();ctx.fill()}
 let running=false;
 function frame(){
   ctx.clearRect(0,0,W,H);
-  for(let i=parts.length-1;i>=0;i--){
-    const s=parts[i];s.t+=s.sp;if(s.t<0)continue;if(s.t>1){parts.splice(i,1);continue}
+  for(let i=parts.length-1;i>=0;i--){const s=parts[i];s.t+=s.sp;if(s.t<0)continue;if(s.t>1){parts.splice(i,1);continue}
     const u=1-s.t,x=u*u*s.x0+2*u*s.t*s.cx+s.t*s.t*s.x1,y=u*u*s.y0+2*u*s.t*s.cy+s.t*s.t*s.y1,al=Math.sin(s.t*Math.PI);
     ctx.fillStyle=`rgba(${COL[s.c]},${al*.25})`;ctx.beginPath();ctx.arc(x,y,s.r*3.2,0,6.283);ctx.fill();
-    ctx.fillStyle=`rgba(${COL[s.c]},${al})`;if(s.star)star(x,y,s.r*1.4);else{ctx.beginPath();ctx.arc(x,y,s.r,0,6.283);ctx.fill()}
-  }
+    ctx.fillStyle=`rgba(${COL[s.c]},${al})`;if(s.star)star(x,y,s.r*1.4);else{ctx.beginPath();ctx.arc(x,y,s.r,0,6.283);ctx.fill()}}
   if(parts.length)requestAnimationFrame(frame);else{running=false;ctx.clearRect(0,0,W,H)}
 }
 function kick(){if(!running&&parts.length){running=true;requestAnimationFrame(frame)}}
@@ -732,80 +1047,114 @@ resize();
 const CH={Q:$("#ch-Q"),S:$("#ch-S"),F:$("#ch-F")};
 function pose(k,v){const s=ART[k][v]||ART[k].base;if(CH[k].getAttribute("src")!==s)CH[k].src=s}
 function baseAll(){pose("F","base");pose("Q","base");pose("S","base")}
-function hot(w){stage.classList.toggle("pick",!!w);CH.Q.classList.toggle("hot",w==="Q");CH.S.classList.toggle("hot",w==="S");if(w)anim(CH[w],"talk")}
 function anim(el,cls){el.classList.remove(cls);void el.offsetWidth;el.classList.add(cls);setTimeout(()=>el.classList.remove(cls),1000)}
+function hot(ws){const set=new Set(ws||[]);stage.classList.toggle("pick",set.size>0);CH.Q.classList.toggle("hot",set.has("Q"));CH.S.classList.toggle("hot",set.has("S"))}
 
 /* ---------- Estado ---------- */
 const screens={intro:$("#s-intro"),game:$("#s-game"),res:$("#s-res"),grp:$("#s-grp")};
-let name="",lives=3,score=0,streak=0,best=0,r=0,sel=-1,locked=false,useTimer=true,tLeft=LIMIT,tHandle=null;
-let outcomes=[],accused=[],bonusRes=[];
+let name="",lives=3,score=0,streak=0,best=0,r=0,sel=new Set(),locked=false,useTimer=true,LIMIT=LIMIT_M,tLeft=LIMIT,tHandle=null;
+let outcomes=[],accused=[],bonusRes=[],clueRes=[];
 function show(n){
   Object.entries(screens).forEach(([k,el])=>el.hidden=(k!==n));
   stopTimer();hot(null);delete stage.dataset.end;baseAll();
-  if(n==="intro"){resetSeals();drawCandles(3);setBg(ART.bg.intro);setTheme("intro");$("#round-tag").textContent="Parte I";say(pick(LINES.intro))}
+  if(n==="intro"){resetSeals();drawCandles(3);setBg(LV.key==="g"?"art/nivel_gigante.webp":ART.bg.intro);setTheme(LV.key==="g"?"g3":"intro");$("#round-tag").textContent=LV.name;say(pick(LV.key==="g"?LINES.introG:LINES.intro))}
   window.scrollTo({top:0,behavior:reduce?"auto":"smooth"});
 }
+
+/* ---------- Selector de nivel ---------- */
+function setLevel(k){
+  LV=LEVELS[k];RS=LV.rounds;store.set("fq-level",k);
+  document.querySelectorAll(".lvl").forEach(b=>{const on=b.dataset.lv===k;b.classList.toggle("on",on);b.setAttribute("aria-checked",on)});
+  $("#start").textContent=k==="g"?"¡Enfrentar al Gigante!":"¡Desafiar a Frestón!";
+  $("#lvl-rules").textContent=k==="g"
+    ?"8 escenas con citas de la primera parte. En cada una puede haber 0, 1 o 2 impostores: voces cambiadas o líneas fuera de tiempo. Por cada impostor que encuentres, elegí qué lo delata."
+    :"8 escenas, 3 velas. En cada una hay un impostor o ninguno. Cada encantamiento que descubrís rompe uno de los ocho sellos.";
+  if(!screens.intro.hidden){setBg(k==="g"?"art/nivel_gigante.webp":ART.bg.intro);setTheme(k==="g"?"g3":"intro");$("#round-tag").textContent=LV.name;say(pick(k==="g"?LINES.introG:LINES.intro))}
+}
+document.querySelectorAll(".lvl").forEach(b=>b.addEventListener("click",()=>setLevel(b.dataset.lv)));
+$("#levels").addEventListener("keydown",e=>{if(e.key==="ArrowRight"||e.key==="ArrowLeft"||e.key==="ArrowDown"||e.key==="ArrowUp"){e.preventDefault();const k=LV.key==="m"?"g":"m";setLevel(k);document.querySelector(`.lvl[data-lv="${k}"]`).focus()}});
 
 /* ---------- Tiempo ---------- */
 function stopTimer(){if(tHandle){clearInterval(tHandle);tHandle=null}}
 function drawTimer(){const t=$("#fuse");t.hidden=!useTimer;t.classList.toggle("low",tLeft<=10);t.firstElementChild.style.transform=`scaleX(${Math.max(0,tLeft/LIMIT)})`}
-function startTimer(){
-  stopTimer();tLeft=LIMIT;drawTimer();
-  if(!useTimer)return;
-  tHandle=setInterval(()=>{tLeft-=.25;drawTimer();if(tLeft<=0){stopTimer();if(!locked)resolve(4,-1)}},250);
-}
+function startTimer(){stopTimer();tLeft=LIMIT;drawTimer();if(!useTimer)return;
+  tHandle=setInterval(()=>{tLeft-=.25;drawTimer();if(tLeft<=0){stopTimer();if(!locked)resolve(true)}},250)}
 
 /* ---------- Juego ---------- */
 $("#start").addEventListener("click",()=>{
   name=$("#nombre").value.trim()||"Anónimo";
-  useTimer=!$("#notimer").checked;
+  useTimer=!$("#notimer").checked;LIMIT=LV.key==="g"?LIMIT_G:LIMIT_M;
   lives=3;score=0;streak=0;best=0;r=0;
-  outcomes=new Array(N).fill(5);accused=new Array(N).fill(-1);bonusRes=new Array(N).fill(-1);
+  outcomes=new Array(N).fill(5);accused=new Array(N).fill(null).map(()=>[]);bonusRes=new Array(N).fill(-1);clueRes=new Array(N).fill(null).map(()=>[]);
+  Music.setMode("game");Music.start();
   show("game");resetSeals();drawCandles(3);
   renderRound();
 });
 function renderRound(){
-  locked=false;sel=-1;hot(null);baseAll();
-  const R=ROUNDS[r];
-  setBg(R.bg);setTheme("r"+r);
-  $("#round-tag").textContent=`Ronda ${r+1}/8`;
+  locked=false;sel=new Set();hot(null);baseAll();
+  const R=RS[r];
+  setBg(R.bg);setTheme(LV.themePrefix+r);
+  $("#round-tag").textContent=`${LV.name} · ${r+1}/8`;
   $("#r-cap").textContent=R.cap;
   $("#r-title").textContent=R.ep;
   $("#r-setup").textContent=R.setup;
-  $("#strip").innerHTML=R.panels.map((p,i)=>`<div class="prow ${p.w.toLowerCase()}" style="--i:${i}"><button type="button" class="panel" data-i="${i}" aria-pressed="false"><img class="ava" src="${FACE[p.w]}" alt=""><span class="bub"><span class="who">${WHO[p.w]}</span><span class="txt">${p.d?`<span class="acot">(${esc(p.d)})</span>`:""}${esc(p.t)}</span></span></button></div>`).join("");
+  $("#strip").innerHTML=R.panels.map((p,i)=>`<div class="prow ${p.w.toLowerCase()}" style="--i:${i}"><button type="button" class="panel" data-i="${i}" aria-pressed="false"><img class="ava" src="${FACE[p.w]}" alt=""><span class="bub"><span class="who">${WHO[p.w]}</span><span class="txt">${p.d?`<span class="acot">(${esc(p.d)})</span>`:""}${esc(p.t)}</span>${LV.key==="g"?`<span class="cite">${R.cap.replace("Capítulos","Caps.").replace("Capítulo","Cap.")}</span>`:""}</span></button></div>`).join("");
   $("#actions").hidden=false;$("#fbp").hidden=true;
-  $("#accuse").disabled=true;
-  $("#pick-hint").textContent="Tocá una línea del diálogo para marcarla.";
+  drawAccuse();
   $("#score").textContent=score;
   $("#combo").textContent=streak>1?`¡Racha ×${streak}!`:"";
   setSeal(r,"now");sealLabel();
-  say(pick(LINES.start));
+  say(pick(LV.key==="g"?LINES.startG:LINES.start));
   startTimer();
+}
+function drawAccuse(){
+  const n=sel.size,g=LV.key==="g";
+  const b=$("#accuse");b.disabled=n===0;
+  b.lastChild.textContent=g?(n>1?`Acusar estas ${n} líneas`:"Acusar esta línea"):"Acusar esta línea";
+  $("#pick-hint").textContent=n===0?(g?"Marcá una o dos líneas, o declarás que no hay impostor.":"Tocá una línea del diálogo para marcarla."):(g?"Podés marcar otra línea, o confirmar la acusación.":"Confirmá con \"Acusar\", o elegí otra línea.");
 }
 $("#strip").addEventListener("click",e=>{
   if(locked)return;
   const b=e.target.closest(".panel");if(!b)return;
-  sel=+b.dataset.i;
-  document.querySelectorAll("#strip .panel").forEach(x=>{const on=+x.dataset.i===sel;x.classList.toggle("sel",on);x.setAttribute("aria-pressed",on)});
-  hot(ROUNDS[r].panels[sel].w);
-  $("#accuse").disabled=false;
-  $("#pick-hint").textContent="Confirmá con \"Acusar\", o elegí otra línea.";
+  const i=+b.dataset.i;
+  if(LV.key==="g"){if(sel.has(i))sel.delete(i);else{if(sel.size>=2)return say("Dos como mucho. ¿O pensás que soy tan torpe?");sel.add(i)}}
+  else sel=sel.has(i)?new Set():new Set([i]);
+  document.querySelectorAll("#strip .panel").forEach(x=>{const on=sel.has(+x.dataset.i);x.classList.toggle("sel",on);x.setAttribute("aria-pressed",on)});
+  hot([...sel].map(k=>RS[r].panels[k].w));
+  drawAccuse();
 });
-$("#accuse").addEventListener("click",()=>{if(!locked&&sel>=0)resolve(ROUNDS[r].clean?3:(sel===FAKE[r]?0:1),sel)});
-$("#clean").addEventListener("click",()=>{if(!locked)resolve(ROUNDS[r].clean?0:2,-1)});
-function resolve(code,acc){
+$("#accuse").addEventListener("click",()=>{if(!locked&&sel.size)resolve(false)});
+$("#clean").addEventListener("click",()=>{if(!locked){sel=new Set();resolve(false)}});
+
+/* outcomes: 0 acertó · 1 acusó a un inocente · 2 dijo "no tocó nada" y había · 3 acusó en escena limpia · 4 tiempo · 5 no jugada · 6 encontró solo uno de dos */
+function resolve(timeout){
   locked=true;stopTimer();hot(null);
-  const R=ROUNDS[r],ok=code===0;
-  outcomes[r]=code;accused[r]=acc;
+  const R=RS[r],F=fakesOf(R),A=[...sel];
+  const hits=A.filter(i=>F.includes(i)),wrong=A.filter(i=>!F.includes(i)),missed=F.filter(i=>!A.includes(i));
+  let code;
+  if(timeout)code=4;
+  else if(!F.length&&!A.length)code=0;
+  else if(!F.length)code=3;
+  else if(!A.length)code=2;
+  else if(wrong.length)code=1;
+  else if(missed.length)code=6;
+  else code=0;
+  const ok=code===0;
+  outcomes[r]=code;accused[r]=A;
   let pts=0;
-  if(ok){streak++;best=Math.max(best,streak);pts=100+Math.round(useTimer?Math.max(0,tLeft)/LIMIT*50:25)+10*Math.min(streak-1,5);score+=pts}else{streak=0;lives--}
+  if(ok){streak++;best=Math.max(best,streak);pts=(LV.key==="g"?120:100)+Math.round(useTimer?Math.max(0,tLeft)/LIMIT*50:25)+10*Math.min(streak-1,5);score+=pts}
+  else{streak=0;lives--;if(code===6){score+=40*hits.length}}
+  const trapHit=wrong.some(i=>R.panels[i].trap);
   [...document.querySelectorAll("#strip .panel")].forEach((b,i)=>{
     b.disabled=true;b.classList.remove("sel");
     const p=R.panels[i],bub=b.querySelector(".bub");
-    if(i===FAKE[r]){
+    if(F.includes(i)){
       b.classList.add("imp");
-      bub.insertAdjacentHTML("beforeend",`<span class="note">Esto lo dice ${WHO[p.from]}, no ${WHO[p.w]}.</span>`);
-    }else if(i===acc){
+      let note;
+      if(LV.key==="g"){const k=p.fake.kind;note=(k==="voz"?`Voz cambiada. ${p.fake.note}`:`Fuera de tiempo. ${p.fake.note}`);if(!A.includes(i))note="Se te escapó. "+note}
+      else note=`Esto lo dice ${WHO[fromOf(p)]}, no ${WHO[p.w]}.`;
+      const later=LV.key==="g"&&A.includes(i);bub.insertAdjacentHTML("beforeend",`<span class="note${later?" later":""}"${later?" hidden":""}>${esc(note)}</span>`);
+    }else if(A.includes(i)){
       b.classList.add("wrong");
       bub.insertAdjacentHTML("beforeend",`<span class="note mute">${esc(p.why||"Esta línea era real.")}</span>`);
     }else if(p.trap){
@@ -816,43 +1165,66 @@ function resolve(code,acc){
   setSeal(r,ok?"won":"lost");sealLabel();
   const sealEl=document.querySelector(`#seals .seal[data-i="${r}"]`);
   if(ok){
-    pose("F","mad");anim(CH.F,"hit");
+    pose("F","mad");anim(CH.F,"hit");Music.sfx("ok");
     burst(CH.F,"gold",46,.3);burst(sealEl,"gold",24,.5);
-    if(FAKE[r]>=0){const f=R.panels[FAKE[r]];stream(CH[f.w],CH[f.from],"gold",40);setTimeout(()=>anim(CH[f.from],"flash"),700)}
+    F.forEach((fi,k)=>{const f=R.panels[fi],fr=fromOf(f);if(fr&&fr!==f.w){setTimeout(()=>{stream(CH[f.w],CH[fr],"gold",36);kick()},k*500);setTimeout(()=>anim(CH[fr],"flash"),700+k*500)}});
     say(pick(R.clean?LINES.cleanOk:LINES.ok));
   }else{
-    pose("F","laugh");anim(CH.F,"laugh");
+    pose("F","laugh");anim(CH.F,"laugh");Music.sfx("bad");
     burst(CH.F,"violet",44,.3);
     drawCandles(lives);
-    say(pick(code===4?LINES.time:code===2?LINES.missed:code===3?LINES.wrongClean:LINES.wrongReal));
+    say(pick(code===4?LINES.time:code===2?LINES.missed:code===3?LINES.wrongClean:code===6?LINES.partial:trapHit&&LV.key==="g"?LINES.wrongTrap:LINES.wrongReal));
   }
   kick();
   const box=$("#fbp");box.className="result "+(ok?"ok":"bad");
-  $("#fb-burst").textContent=ok?`+${pts}`:"¡Ja!";
-  $("#fb-v").textContent=ok?(R.clean?"¡Bien! No había impostor.":"¡Sello roto!"):code===4?"Se acabó el tiempo.":code===2?"Sí había un impostor.":code===3?"Esa línea era real.":"No era ese.";
-  $("#fb-why").textContent=R.why;
+  $("#fb-burst").textContent=ok?`+${pts}`:code===6?`+${40*hits.length}`:"¡Ja!";
+  $("#fb-v").textContent=ok?(R.clean?"¡Bien! No había impostor.":(F.length>1?"¡Dos sellos de un golpe!":"¡Sello roto!")):code===4?"Se acabó el tiempo.":code===2?"Sí había impostor.":code===3?"No había impostor.":code===6?"Encontraste uno, pero había otro.":"Esa línea era real.";
+  $("#fb-why").textContent=R.why;$("#fb-why").hidden=LV.key==="g"&&hits.length>0;
   $("#fb-scene").textContent="Para pensar: "+R.scene;
   box.hidden=false;
-  $("#next").textContent=(lives<=0||r===N-1)?"Ver mi resultado":"Siguiente ronda →";
+  $("#next").textContent=(lives<=0||r===N-1)?"Ver mi resultado":"Siguiente escena →";
   $("#next").hidden=true;$("#mirror").hidden=true;
-  renderBalanza(R);
   $("#score").textContent=score;
   $("#combo").textContent=streak>1?`¡Racha ×${streak}!`:"";
   if(!ok&&!reduce){const s=$("#strip");s.classList.remove("shake");void s.offsetWidth;s.classList.add("shake")}
-  const first=document.querySelector("#bal-opts .bopt");if(first)first.focus({preventScroll:true});
+  // nivel Gigante: justificar cada impostor encontrado
+  const toJustify=LV.key==="g"?hits:[];
+  renderClues(R,toJustify);
   box.scrollIntoView({block:"nearest",behavior:reduce?"auto":"smooth"});
 }
+
+/* ---------- Justificación (nivel Gigante) ---------- */
+function renderClues(R,list){
+  const box=$("#clues");
+  if(!list.length){box.hidden=true;box.innerHTML="";renderBalanza(R);return}
+  box.hidden=false;$("#bal").hidden=true;
+  box.innerHTML=`<span class="label">¿Qué delata cada encantamiento? · +40 c/u</span>`+list.map(fi=>{
+    const p=R.panels[fi],order=shuffle([0,1,2]);
+    return `<div class="clue" data-f="${fi}"><p class="cq">«${esc(p.t.length>90?p.t.slice(0,90)+"…":p.t)}»</p><div class="copts">${order.map(k=>`<button type="button" class="copt" data-k="${k}">${esc(p.fake.clues[k][0])}</button>`).join("")}</div></div>`}).join("");
+  const first=box.querySelector(".copt");if(first)first.focus({preventScroll:true});
+}
+$("#clues").addEventListener("click",e=>{
+  const b=e.target.closest(".copt");if(!b||b.disabled)return;
+  const cl=b.closest(".clue"),fi=+cl.dataset.f,p=RS[r].panels[fi],k=+b.dataset.k,ok=p.fake.clues[k][1]===1;
+  cl.querySelectorAll(".copt").forEach(x=>{x.disabled=true;const kk=+x.dataset.k;if(p.fake.clues[kk][1]===1)x.classList.add("right");else if(x===b)x.classList.add("miss")});
+  clueRes[r].push(ok?1:0);
+  if(ok){score+=40;$("#score").textContent=score;Music.sfx("ok")}
+  if(!$("#clues").querySelector(".copt:not(:disabled)")){document.querySelectorAll("#strip .note.later").forEach(n=>n.hidden=false);$("#fb-why").hidden=false;renderBalanza(RS[r])}
+});
+
 /* ---------- La balanza y el espejo ---------- */
 function renderBalanza(R){
   const B=R.bonus,order=shuffle([0,1,2]);
+  $("#bal").hidden=false;
   $("#bal-q").textContent=B.ask;
   $("#bal-fb").textContent="";$("#bal-fb").className="bfb";
   $("#bal-opts").innerHTML=order.map(i=>`<button type="button" class="bopt" data-o="${i}">${esc(B.opts[i])}</button>`).join("");
+  const f=document.querySelector("#bal-opts .bopt");if(f)f.focus({preventScroll:true});
 }
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 $("#bal-opts").addEventListener("click",e=>{
   const b=e.target.closest(".bopt");if(!b||b.disabled)return;
-  const R=ROUNDS[r],B=R.bonus,o=+b.dataset.o,ok=o===B.ok;
+  const R=RS[r],B=R.bonus,o=+b.dataset.o,ok=o===B.ok;
   bonusRes[r]=ok?1:0;
   document.querySelectorAll("#bal-opts .bopt").forEach(x=>{x.disabled=true;const k=+x.dataset.o;if(k===B.ok)x.classList.add("right");else if(x===b)x.classList.add("miss")});
   const fb=$("#bal-fb");
@@ -870,48 +1242,52 @@ $("#next").addEventListener("click",()=>{if(lives<=0||r===N-1)finish();else{r++;
 /* ---------- Resultado ---------- */
 function b64enc(str){const b=new TextEncoder().encode(str);let s="";b.forEach(c=>s+=String.fromCharCode(c));return btoa(s)}
 function b64dec(str){const bin=atob(str.trim());return new TextDecoder().decode(Uint8Array.from(bin,c=>c.charCodeAt(0)))}
+let lastWon=false;
 function finish(){
   const solved=outcomes.filter(o=>o===0).length;
-  let wTrap=0,wPlain=0,missed=0,over=0,tout=0;
+  let wTrap=0,wPlain=0,missed=0,over=0,tout=0,half=0;
   outcomes.forEach((o,i)=>{
-    if(o===1||o===3){const p=ROUNDS[i].panels[accused[i]];if(p&&p.trap)wTrap++;else if(o===3)over++;else wPlain++}
-    else if(o===2)missed++;else if(o===4)tout++;
+    if(o===1||o===3){const ps=(accused[i]||[]).map(k=>RS[i].panels[k]);if(ps.some(p=>p&&p.trap))wTrap++;else if(o===3)over++;else wPlain++}
+    else if(o===2)missed++;else if(o===4)tout++;else if(o===6)half++;
   });
-  const list=[[wTrap,"Te engañan las líneas que salen de su papel","Las líneas reales que parecían falsos te hicieron acusar mal: Sancho también se ilusiona (la ínsula) y Don Quijote también sabe lo que imagina (Dulcinea). Ahí se ve el contagio entre los dos."],
+  const list=[[wTrap,"Te engañan las líneas que salen de su papel","Las líneas reales que parecían falsas te hicieron acusar mal: en el libro, Sancho también fabula y Don Quijote también razona. Ahí se ve el contagio entre los dos."],
               [wPlain,"Te cuesta separar las dos voces","Acusaste líneas que eran reales. Repasá quién ve desde el ideal y quién desde lo práctico."],
-              [missed,"Desconfiás poco","Dijiste que Frestón no tocó nada cuando sí había un cambio. Leé cada línea preguntándote si realmente va con quien la dice."],
+              [missed,"Desconfiás poco","Dijiste que Frestón no tocó nada cuando sí había un cambio. Leé cada línea preguntándote si realmente va con quien la dice… y en ese momento."],
               [over,"Desconfiás de todo","Acusaste en escenas donde Frestón no había tocado nada. A veces el texto es simplemente fiel."],
-              [tout,"Te faltó tiempo","Se te acabó la mecha en alguna ronda. Probá jugar sin reloj para leer con calma."]];
-  const won=solved>=5&&lives>0;
+              [half,"Te quedás a mitad de camino","Encontraste un encantamiento pero se te escapó el segundo. En el nivel Gigante, revisá también el cuándo de cada línea."],
+              [tout,"Te faltó tiempo","Se te acabó la mecha en alguna escena. Probá jugar sin reloj para leer con calma."]];
+  const won=solved>=5&&lives>0;lastWon=won;
   let title,txt,medal;
-  if(solved>=7&&lives>0){title="Cazador de encantadores";medal="oro";txt="Distinguís quién ve qué y reconocés cuándo las dos miradas se mezclan. Frestón no tiene por dónde."}
+  const top=list.reduce((a,b)=>b[0]>a[0]?b:a);
+  if(solved>=7&&lives>0){title=LV.key==="g"?"Lector de gigantes":"Cazador de encantadores";medal="oro";txt=LV.key==="g"?"Leíste la primera parte con lupa: distinguís las dos miradas incluso cuando cada uno se acerca a la del otro.":"Distinguís quién ve qué y reconocés cuándo las dos miradas se mezclan. Frestón no tiene por dónde."}
   else{
-    const top=list.reduce((a,b)=>b[0]>a[0]?b:a);
     if(won){title="Sabueso de la Mancha";medal="plata"}
     else if(solved>=3){title="Aprendiz de sabueso";medal="bronce"}
     else{title="Frestón ganó esta vez";medal="freston"}
     txt=top[0]>0?`${top[1]}. ${top[2]}`:"Seguí leyendo con atención: cada escena muestra quién interpreta desde el ideal y quién desde lo que cuesta.";
   }
+  const bal=bonusRes.filter(x=>x===1).length,balPlayed=bonusRes.filter(x=>x>=0).length;
+  if(balPlayed&&bal/balPlayed<.5)txt+=" En la balanza te costó ver qué mueve a cada uno: repasá el retrato de abajo.";
+  else if(balPlayed&&bal===balPlayed)txt+=" Y en la balanza entendiste qué mueve a cada uno en todas las escenas.";
+  const clAll=clueRes.flat(),clOk=clAll.filter(x=>x===1).length;
   $("#res-medal").src=`art/medalla_${medal}.webp`;
-  $("#res-name").textContent=name+(won?" · Frestón derrotado":" · Frestón ganó");
+  $("#res-name").textContent=`${name} · Nivel ${LV.name}`+(won?" · Frestón derrotado":" · Frestón ganó");
   $("#res-prof").textContent=title;$("#res-txt").textContent=txt;
   $("#res-n").textContent=`${solved}/8`;
   $("#res-pts").textContent=score;
   $("#res-combo").textContent=`×${best}`;
   $("#res-lives").textContent=Math.max(0,lives);
-  const bal=bonusRes.filter(x=>x===1).length,balPlayed=bonusRes.filter(x=>x>=0).length;
   $("#res-bal").textContent=`${bal}/${balPlayed||8}`;
-  if(balPlayed&&bal/balPlayed<.5)txt+=" En la balanza te costó ver qué mueve a cada uno: repasá el retrato de abajo.";
-  else if(balPlayed&&bal===balPlayed)txt+=" Y en la balanza entendiste qué mueve a cada uno en todas las escenas.";
-  $("#res-txt").textContent=txt;
+  const sc=$("#res-clues");sc.hidden=LV.key!=="g";$("#res-cl").textContent=clAll.length?`${clOk}/${clAll.length}`:"—";
   $("#ret-table").innerHTML=`<thead><tr><th>Escena</th><th class="q">Don Quijote ve</th><th class="s">Sancho ve</th></tr></thead><tbody>`+
-    ROUNDS.map((R,i)=>`<tr class="${R.mix?"mixrow":""}"><td>${ROMAN[i]}. ${esc(R.ep)}</td><td class="q">${esc(R.mirror.q)}</td><td class="s">${esc(R.mirror.s)}</td></tr>`).join("")+`</tbody>`;
-  $("#res-fb").innerHTML=ROUNDS.map((R,i)=>{
+    RS.map((R,i)=>`<tr class="${R.mix?"mixrow":""}"><td>${ROMAN[i]}. ${esc(R.ep)}</td><td class="q">${esc(R.mirror.q)}</td><td class="s">${esc(R.mirror.s)}</td></tr>`).join("")+`</tbody>`;
+  $("#res-fb").innerHTML=RS.map((R,i)=>{
     const o=outcomes[i],cls=o===5?"na":o===0?"ok":"bad";
-    const tag=o===5?"No jugada":o===0?"Sello roto":o===4?"Sin tiempo":"Error";
+    const tag=o===5?"No jugada":o===0?"Sello roto":o===4?"Sin tiempo":o===6?"A medias":"Error";
     return `<li class="${cls}"><div class="thumb" style="background-image:url('${R.bg}')"></div><div class="rt"><img src="art/${o===0?"sello_roto":"sello"}.webp" alt=""><h3>${ROMAN[i]}. ${esc(R.ep)}</h3><span class="tag">${tag}</span></div>${o===5?"":`<p>${esc(R.why)}</p>`}</li>`;
   }).join("");
-  $("#res-code").value=b64enc(JSON.stringify({n:name,o:outcomes,a:accused,b:bonusRes,s:score}));
+  $("#res-code").value=b64enc(JSON.stringify({n:name,lv:LV.key,o:outcomes,a:accused.map(x=>x.length===0?-1:x.length===1?x[0]:x),b:bonusRes,c:clueRes.map(x=>x.reduce((s,v)=>s+v,0)),s:score}));
+  $("#reward-again").hidden=!won;
   show("res");
   setBg(ART.bg.intro);
   outcomes.forEach((o,i)=>setSeal(i,o===0?"won":o===5?"":"lost"));sealLabel();
@@ -921,8 +1297,11 @@ function finish(){
   if(won){pose("Q","win");pose("S","win");pose("F","mad")}else{pose("Q","lose");pose("S","lose");pose("F","laugh")}
   say(pick(won?LINES.win:LINES.lose));
   setTimeout(()=>{if(won){burst(CH.Q,"gold",50);burst(CH.S,"gold",50)}else burst(CH.F,"violet",60,.3);kick()},400);
+  if(won)setTimeout(()=>openReward(solved),900);
+  else $("#reward-teaser").hidden=false;
 }
-$("#restart").addEventListener("click",()=>show("intro"));
+$("#restart").addEventListener("click",()=>{$("#reward-teaser").hidden=true;show("intro")});
+$("#reward-again").addEventListener("click",()=>openReward(outcomes.filter(o=>o===0).length));
 let tt=null;
 function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>t.classList.remove("on"),2200)}
 $("#copy-code").addEventListener("click",async()=>{
@@ -931,59 +1310,117 @@ $("#copy-code").addEventListener("click",async()=>{
   catch(e){ta.focus();ta.select();toast("Seleccioné el código: copialo con Ctrl+C")}
 });
 
+/* ---------- Recompensas ---------- */
+let rwSteps=[],rwI=0,lastFocus=null;
+function openReward(solved){
+  lastFocus=document.activeElement;
+  const nm=esc(name||"Anónimo");
+  const rw=$("#reward");rw.dataset.kind=LV.key;
+  $("#rw-ms").hidden=LV.key!=="g";
+  $("#rw-img").src=LV.key==="g"?"art/premio_manuscrito.webp":"art/premio_ventero.webp";
+  Music.setMode("reward");Music.sfx("fanfare");
+  if(LV.key==="m"){
+    rwSteps=[
+      {k:"Capítulo III · La vela de armas",t:"El ventero te espera",l:"Trae el libro donde asentaba la paja y cebada que daba a los arrieros, un cabo de vela y a las dos doncellas. Te manda hincar de rodillas…",fx:""},
+      {k:"Capítulo III · El ceremonial",t:"¡Pescozada! ¡Espaldarazo!",l:"«…y, leyendo en su manual, como que decía alguna devota oración, en mitad de la leyenda alzó la mano y diole sobre el cuello un buen golpe, y tras él, con su mesma espada, un gentil espaldarazo».",fx:"strike"},
+      {k:"Capítulo III · La doncella te ciñe la espada",t:`${nm}, caballero andante de la Mancha`,l:`«Dios haga a vuestra merced muy venturoso caballero y le dé ventura en lides». Rompiste ${solved} de los 8 sellos de Frestón: quedás armado caballero, como Don Quijote en la venta.`,fx:"crown"}
+    ];
+  }else{
+    rwSteps=[
+      {k:"Capítulo IX · El Alcaná de Toledo",t:"Un muchacho vende papeles viejos",l:"Entre los cartapacios que lleva a un sedero aparece uno escrito en caracteres arábigos. Un morisco aljamiado empieza a traducirlo…",fx:"",ms:["",""]},
+      {k:"Capítulo IX · El título del manuscrito",t:"Hay un capítulo nuevo",l:"Cervantes encontró así la «Historia de don Quijote de la Mancha, escrita por Cide Hamete Benengeli, historiador arábigo». Pero en estos papeles hay un capítulo que nadie había leído.",fx:"ink",ms:[`Historia de<br><b>${nm}</b>`,"escrita por Cide Hamete Benengeli, historiador arábigo"]},
+      {k:"Cide Hamete Benengeli te escribe en su historia",t:`${nm} entra en el manuscrito`,l:`Quedás en la historia como quien supo distinguir, donde otros veían un solo mundo, la mirada del que lee el mundo en los libros y la del que lo prueba con el cuerpo.`,fx:"ink",ms:[`Historia de<br><b>${nm}</b><small>escrita por Cide Hamete Benengeli, historiador arábigo</small>`,`Cuenta Cide Hamete que ${nm} deshizo ${solved} de los ocho encantamientos de Frestón, y que no se dejó engañar.`]}
+    ];
+  }
+  rwI=0;rw.hidden=false;document.body.classList.add("modal");
+  drawReward();
+  $("#rw-next").focus();
+}
+function drawReward(){
+  const s=rwSteps[rwI],art=$("#rw-art");
+  $("#rw-kicker").textContent=s.k;$("#rw-title").innerHTML=s.t;$("#rw-line").innerHTML=s.l;
+  const tx=document.querySelector(".rw-txt");tx.classList.remove("in");void tx.offsetWidth;tx.classList.add("in");
+  art.classList.remove("strike","crown","ink");void art.offsetWidth;if(s.fx)art.classList.add(s.fx);
+  if(s.fx==="strike")Music.sfx("ok");
+  if(s.fx==="crown"){Music.sfx("fanfare");rwConfetti()}
+  if(s.ms){$("#rw-l").innerHTML=s.ms[0];typeInk($("#rw-r"),s.ms[1])}
+  $("#rw-next").textContent=rwI<rwSteps.length-1?"Seguir →":"Ver mis resultados";
+}
+let inkT=null;
+function typeInk(el,html){
+  clearInterval(inkT);
+  if(reduce||!html){el.innerHTML=html;return}
+  const tmp=document.createElement("div");tmp.innerHTML=html;const full=tmp.textContent;let i=0;el.textContent="";
+  inkT=setInterval(()=>{i+=2;el.textContent=full.slice(0,i);if(i>=full.length){clearInterval(inkT);el.innerHTML=html}},28);
+}
+function rwConfetti(){
+  const box=$("#rw-confetti");box.innerHTML="";if(reduce)return;
+  const cols=["#FFD23F","#E63946","#FF9F1C","#8B5CF6","#14B86E","#fff"];
+  for(let i=0;i<46;i++){const s=document.createElement("i");s.style.left=Math.random()*100+"%";s.style.background=cols[i%cols.length];s.style.animationDelay=(Math.random()*.6)+"s";s.style.setProperty("--x",(Math.random()*160-80)+"px");s.style.setProperty("--r",(Math.random()*720-360)+"deg");box.appendChild(s)}
+}
+function closeReward(){clearInterval(inkT);$("#reward").hidden=true;document.body.classList.remove("modal");Music.setMode("game");if(lastFocus&&lastFocus.focus)lastFocus.focus({preventScroll:true})}
+$("#rw-next").addEventListener("click",()=>{if(rwI<rwSteps.length-1){rwI++;drawReward()}else closeReward()});
+$("#rw-close").addEventListener("click",closeReward);
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#reward").hidden)closeReward()});
+
 /* ---------- Mapa del grupo ---------- */
 const SAMPLE=[
- {n:"Ejemplo 1",o:[0,0,0,0,0,0,0,0],a:[-1,-1,-1,-1,-1,-1,-1,-1],s:1100},
- {n:"Ejemplo 2",o:[0,3,0,0,1,1,0,0],a:[-1,2,-1,-1,1,3,-1,-1],s:620},
- {n:"Ejemplo 3",o:[0,0,1,1,0,1,5,5],a:[-1,-1,1,4,-1,0,-1,-1],s:290},
- {n:"Ejemplo 4",o:[0,0,0,4,0,0,1,0],a:[-1,-1,-1,-1,-1,-1,0,-1],s:760},
- {n:"Ejemplo 5",o:[1,0,0,0,1,1,5,5],a:[1,-1,-1,-1,2,3,-1,-1],s:330},
- {n:"Ejemplo 6",o:[0,0,0,0,0,1,0,3],a:[-1,-1,-1,-1,-1,3,-1,3],s:690}
+ {n:"Ejemplo 1",lv:"m",o:[0,0,0,0,0,0,0,0],a:[-1,-1,-1,-1,-1,-1,-1,-1],b:[1,1,1,1,1,1,1,1],s:1100},
+ {n:"Ejemplo 2",lv:"m",o:[0,3,0,0,1,1,0,0],a:[-1,2,-1,-1,1,3,-1,-1],b:[1,1,0,1,1,0,1,1],s:620},
+ {n:"Ejemplo 3",lv:"m",o:[0,0,1,1,0,1,5,5],a:[-1,-1,1,4,-1,0,-1,-1],b:[1,0,1,0,1,1,-1,-1],s:290},
+ {n:"Ejemplo 4",lv:"m",o:[0,0,0,4,0,0,1,0],a:[-1,-1,-1,-1,-1,-1,0,-1],b:[1,1,1,1,0,1,0,1],s:760},
+ {n:"Ejemplo 5",lv:"g",o:[0,1,3,0,6,0,0,1],a:[3,3,0,3,2,4,-1,0],b:[1,1,1,0,1,1,1,0],s:980},
+ {n:"Ejemplo 6",lv:"g",o:[0,0,0,1,0,0,3,6],a:[3,2,-1,2,[2,5],4,1,2],b:[1,1,1,1,1,0,1,1],s:1320},
+ {n:"Ejemplo 7",lv:"g",o:[2,1,3,0,1,0,5,5],a:[-1,4,0,3,0,4,-1,-1],b:[0,1,0,1,1,0,-1,-1],s:410}
 ];
-[[1,1,1,1,1,1,1,1],[1,1,0,1,1,0,1,1],[1,0,1,0,1,1,-1,-1],[1,1,1,1,0,1,0,1],[0,1,1,1,0,1,-1,-1],[1,1,1,0,1,1,1,0]].forEach((b,i)=>SAMPLE[i].b=b);
 function parseLine(l){
   try{
     const o=JSON.parse(b64dec(l));
     if(typeof o.n!=="string")return null;
-    if(!Array.isArray(o.o)||o.o.length!==N||!o.o.every(v=>Number.isInteger(v)&&v>=0&&v<=5))return null;
-    if(!Array.isArray(o.a)||o.a.length!==N||!o.a.every(v=>Number.isInteger(v)&&v>=-1&&v<=4))return null;
+    if(!Array.isArray(o.o)||o.o.length!==N||!o.o.every(v=>Number.isInteger(v)&&v>=0&&v<=6))return null;
+    if(!Array.isArray(o.a)||o.a.length!==N)return null;
+    const a=o.a.map(v=>Array.isArray(v)?v.filter(Number.isInteger):Number.isInteger(v)?v:-1);
     const b=Array.isArray(o.b)&&o.b.length===N&&o.b.every(v=>v===-1||v===0||v===1)?o.b:new Array(N).fill(-1);
-    return {n:o.n.slice(0,40),o:o.o,a:o.a,b,s:typeof o.s==="number"?o.s:0};
+    return {n:o.n.slice(0,40),lv:o.lv==="g"?"g":"m",o:o.o,a,b,s:typeof o.s==="number"?o.s:0};
   }catch(e){return null}
 }
-let lastGroup=null;
-function buildGroup(list,isSample){
-  const n=list.length;
-  lastGroup=n?{list,isSample}:null;
+let lastGroup=null,grpLv="m";
+function buildGroup(all,isSample){
+  lastGroup=all.length?{list:all,isSample}:null;
+  const cm=all.filter(l=>l.lv==="m").length,cg=all.filter(l=>l.lv==="g").length;
+  $("#grp-lv").hidden=!(cm&&cg);
+  if(cm&&!cg)grpLv="m";if(cg&&!cm)grpLv="g";
+  document.querySelectorAll("#grp-lv button").forEach(b=>{const on=b.dataset.lv===grpLv;b.classList.toggle("on",on);b.setAttribute("aria-pressed",on);b.querySelector("span").textContent=b.dataset.lv==="m"?cm:cg});
+  const list=all.filter(l=>l.lv===grpLv),n=list.length,RR=LEVELS[grpLv].rounds;
   if(!n){$("#grp-out").hidden=true;resetSeals();return}
   $("#grp-out").hidden=false;
-  $("#grp-flag").textContent=isSample?"Datos de ejemplo — no son resultados reales":`${n} ${n===1?"persona":"personas"} en el mapa`;
-  const per=ROUNDS.map((R,i)=>{const played=list.filter(l=>l.o[i]!==5);const solved=played.filter(l=>l.o[i]===0).length;return {i,rate:played.length?solved/played.length:null}});
+  $("#grp-flag").textContent=(isSample?"Datos de ejemplo — no son resultados reales · ":"")+`Nivel ${LEVELS[grpLv].name} · ${n} ${n===1?"persona":"personas"}`;
+  const per=RR.map((R,i)=>{const played=list.filter(l=>l.o[i]!==5);const solved=played.filter(l=>l.o[i]===0).length;return {i,rate:played.length?solved/played.length:null}});
   const avg=list.reduce((x,l)=>x+l.o.filter(v=>v===0).length,0)/n;
   const rated=per.filter(p=>p.rate!==null);
-  let hardest=rated.length?rated.reduce((a,b)=>b.rate<a.rate?b:a):null;
-  if(hardest&&hardest.rate===1)hardest=null;
+  let hardest=rated.length?rated.reduce((a,b)=>b.rate<a.rate?b:a):null;if(hardest&&hardest.rate===1)hardest=null;
   const tally={};
-  list.forEach(l=>l.o.forEach((o,i)=>{if((o===1||o===3)&&l.a[i]>=0&&l.a[i]<ROUNDS[i].panels.length){const k=i+"-"+l.a[i];tally[k]=(tally[k]||0)+1}}));
+  list.forEach(l=>l.o.forEach((o,i)=>{if(o===1||o===3){[].concat(l.a[i]).forEach(pi=>{if(pi>=0&&pi<RR[i].panels.length&&!RR[i].panels[pi].fake){const k=i+"-"+pi;tally[k]=(tally[k]||0)+1}})}}));
   const topKey=Object.keys(tally).sort((a,b)=>tally[b]-tally[a])[0];
   let trapTxt="—",trapSub="línea real más acusada por error";
-  if(topKey){const [ri,pi]=topKey.split("-").map(Number);trapTxt=`${ROMAN[ri]}·${pi+1}`;const t=ROUNDS[ri].panels[pi].t;trapSub=`línea real que engañó a ${tally[topKey]}: “${t.length>60?t.slice(0,60)+"…":t}”`}
+  if(topKey){const [ri,pi]=topKey.split("-").map(Number);trapTxt=`${ROMAN[ri]}·${pi+1}`;const t=RR[ri].panels[pi].t;trapSub=`línea real que engañó a ${tally[topKey]}: “${t.length>60?t.slice(0,60)+"…":t}”`}
   const broken=per.filter(p=>p.rate!==null&&p.rate>=.5).length;
   let bOk=0,bAll=0;list.forEach(l=>l.b.forEach(v=>{if(v>=0){bAll++;if(v===1)bOk++}}));
   const balAvg=bAll?Math.round(bOk/bAll*100)+"%":"—";
   $("#grp-stats").innerHTML=`
    <div class="stat"><b>${broken}/8</b><span>sellos rotos por el grupo (los resolvió al menos la mitad)</span></div>
    <div class="stat"><b>${avg.toFixed(1)}</b><span>escenas resueltas por persona</span></div>
-   <div class="stat"><b style="font-size:1.6rem">${hardest?esc(ROUNDS[hardest.i].ep):"—"}</b><span>escena más difícil${hardest?` (${Math.round(hardest.rate*100)}%)`:""}</span></div>
+   <div class="stat"><b style="font-size:1.6rem">${hardest?esc(RR[hardest.i].ep):"—"}</b><span>escena más difícil${hardest?` (${Math.round(hardest.rate*100)}%)`:""}</span></div>
    <div class="stat"><b>${esc(trapTxt)}</b><span>${esc(trapSub)}</span></div>
    <div class="stat"><b>${balAvg}</b><span>aciertos en la balanza (qué mueve a cada uno)</span></div>`;
   $("#grp-bars").innerHTML=per.map(p=>{
-    const R=ROUNDS[p.i],pct=p.rate===null?0:Math.round(p.rate*100);
+    const R=RR[p.i],pct=p.rate===null?0:Math.round(p.rate*100);
     const errs=list.reduce((c,l)=>{c[l.o[p.i]]=(c[l.o[p.i]]||0)+1;return c},{});
     const bits=[];
-    if(errs[1])bits.push(`${errs[1]} acusó otra línea`);
+    if(errs[1])bits.push(`${errs[1]} acusó una línea real`);
     if(errs[2])bits.push(`${errs[2]} dijo "no tocó nada"`);
     if(errs[3])bits.push(`${errs[3]} acusó en una escena limpia`);
+    if(errs[6])bits.push(`${errs[6]} encontró solo uno de dos`);
     if(errs[4])bits.push(`${errs[4]} sin tiempo`);
     const bp=list.filter(l=>l.b[p.i]>=0);if(bp.length)bits.push(`balanza: ${Math.round(bp.filter(l=>l.b[p.i]===1).length/bp.length*100)}% entendió qué mueve a ${WHO[R.bonus.who]}`);
     return `<li><div class="t"><span>${ROMAN[p.i]}. ${esc(R.ep)}${R.clean?` <span class="hint">· sin impostor</span>`:""}</span><span>${p.rate===null?"sin datos":pct+"%"}</span></div><div class="gbar" role="img" aria-label="${pct}% resolvió"><i style="width:${pct}%"></i></div>${bits.length?`<span class="hint">${esc(bits.join(" · "))}</span>`:""}</li>`;
@@ -994,6 +1431,7 @@ function buildGroup(list,isSample){
   if(gw){pose("Q","win");pose("S","win");pose("F","mad")}else{pose("Q","lose");pose("S","lose");pose("F","laugh")}
   say(broken>=6?"Tu grupo rompió casi todos mis sellos. Esto no quedará así.":broken>=4?`El grupo rompió ${broken} de mis sellos. Todavía me quedan otros.`:`Apenas ${broken} sellos rotos. Mis encantamientos siguen firmes.`);
 }
+document.querySelectorAll("#grp-lv button").forEach(b=>b.addEventListener("click",()=>{grpLv=b.dataset.lv;if(lastGroup)buildGroup(lastGroup.list,lastGroup.isSample)}));
 $("#grp-build").addEventListener("click",()=>{
   const lines=$("#codes").value.split(/\n+/).map(l=>l.trim()).filter(Boolean);
   const seen=new Set(),list=[];let bad=0;
@@ -1002,7 +1440,7 @@ $("#grp-build").addEventListener("click",()=>{
   buildGroup(list,false);
 });
 $("#grp-sample").addEventListener("click",()=>{$("#grp-msg").textContent="";buildGroup(SAMPLE,true)});
-$("#grp-clear").addEventListener("click",()=>{lastGroup=null;$("#codes").value="";$("#grp-msg").textContent="";$("#grp-out").hidden=true;resetSeals();delete stage.dataset.end;baseAll();say(pick(LINES.group))});
+$("#grp-clear").addEventListener("click",()=>{lastGroup=null;$("#codes").value="";$("#grp-msg").textContent="";$("#grp-out").hidden=true;$("#grp-lv").hidden=true;resetSeals();delete stage.dataset.end;baseAll();say(pick(LINES.group))});
 function goGrp(){
   show("grp");resetSeals();drawCandles(3);setBg(ART.bg.group);setTheme("group");$("#round-tag").textContent="Grupo";
   if(lastGroup)buildGroup(lastGroup.list,lastGroup.isSample);else say(pick(LINES.group));
@@ -1015,6 +1453,7 @@ $("#intro-grp").addEventListener("click",goGrp);
 $("#res-grp").addEventListener("click",goGrp);
 
 buildSeals();drawCandles(3);
+setLevel(LV.key);
 show("intro");
 })();
 </script>
