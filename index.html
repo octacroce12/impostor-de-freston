@@ -407,6 +407,45 @@ body.modal{overflow:hidden}
   .reward,.rw-inner,.rw-txt.in,.rw-art.strike,.rw-art.ink .pg,.clues{animation:none}
 }
 
+/* ---------- Golpe en pantalla al acertar o fallar ---------- */
+.splash{position:fixed;inset:0;z-index:25;display:grid;place-items:center;pointer-events:none;opacity:0;visibility:hidden}
+.splash.on{visibility:visible;animation:spFade 1.5s ease forwards}
+.splash.ok{background:radial-gradient(circle at 50% 50%,rgba(255,210,63,.45),rgba(255,210,63,0) 60%)}
+.splash.bad{background:radial-gradient(circle at 50% 50%,rgba(139,92,246,.5),rgba(40,10,80,.25) 70%)}
+.sp-box{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center}
+.sp-rays{position:absolute;left:50%;top:38%;width:min(130vw,820px);aspect-ratio:1;translate:-50% -50%;border-radius:50%;opacity:.9;z-index:-1}
+.splash.ok .sp-rays{background:repeating-conic-gradient(rgba(255,226,120,.85) 0 8deg,rgba(255,226,120,0) 8deg 20deg);-webkit-mask:radial-gradient(circle,#000 18%,transparent 62%);mask:radial-gradient(circle,#000 18%,transparent 62%)}
+.splash.bad .sp-rays{background:radial-gradient(circle,rgba(139,92,246,.75),rgba(139,92,246,0) 60%);filter:blur(8px)}
+.splash.on.ok .sp-rays{animation:spSpin 1.5s linear}
+.splash.on.bad .sp-rays{animation:spSmoke 1.5s ease-out}
+.sp-box img{width:clamp(120px,30vw,200px);height:auto;filter:drop-shadow(0 8px 0 rgba(20,33,61,.35))}
+.splash.bad .sp-box img{border-radius:50%;border:5px solid var(--ink);box-shadow:0 0 0 6px var(--f),0 0 40px rgba(139,92,246,.9);background:var(--f-l)}
+.sp-box b{font-family:var(--display);font-weight:700;font-size:clamp(2.4rem,9vw,4.4rem);line-height:1;color:var(--sun);text-shadow:0 3px 0 var(--sun-d),0 6px 0 var(--ink),0 10px 24px rgba(0,0,0,.4)}
+.splash.bad .sp-box b{color:#fff;text-shadow:0 3px 0 var(--f-d),0 6px 0 var(--ink),0 10px 24px rgba(0,0,0,.4)}
+.sp-box span{font-family:var(--game);font-weight:800;font-size:clamp(1rem,3.5vw,1.3rem);color:var(--ink);background:var(--paper);border:3px solid var(--ink);border-radius:99px;padding:2px 16px 0;box-shadow:0 4px 0 var(--ink)}
+.splash.on.ok .sp-box{animation:spStamp 1.5s cubic-bezier(.3,1.5,.5,1)}
+.splash.on.bad .sp-box{animation:spWobble 1.5s ease-out}
+.sp-candle{position:absolute;right:-18%;bottom:8%;width:clamp(48px,11vw,72px)!important;border:0!important;box-shadow:none!important;background:none!important;border-radius:0!important;animation:spDrop 1.5s ease-out}
+.splash.ok .sp-candle{display:none}
+@keyframes spFade{0%{opacity:0}10%{opacity:1}72%{opacity:1}100%{opacity:0}}
+@keyframes spStamp{0%{transform:scale(2.4) rotate(-14deg);opacity:0}16%{transform:scale(.92) rotate(-4deg);opacity:1}26%{transform:scale(1.04) rotate(-5deg)}100%{transform:scale(1) rotate(-5deg)}}
+@keyframes spWobble{0%{transform:scale(.4)}14%{transform:scale(1.1) rotate(-6deg)}24%{transform:scale(1) rotate(5deg)}34%{transform:rotate(-4deg)}44%{transform:rotate(3deg)}56%,100%{transform:none}}
+@keyframes spSpin{from{rotate:0deg;scale:.6}to{rotate:50deg;scale:1.1}}
+@keyframes spSmoke{from{scale:.3}to{scale:1.2}}
+@keyframes spDrop{0%,30%{opacity:0;transform:translateY(-20px)}45%{opacity:1;transform:none}}
+/* Mini golpe en las opciones (balanza y justificaciones) */
+.pip{position:fixed;z-index:24;pointer-events:none;font-family:var(--game);font-weight:800;font-size:1.15rem;border:3px solid var(--ink);border-radius:99px;padding:2px 14px 0;box-shadow:0 4px 0 var(--ink);translate:-50% -50%;animation:pipUp 1.1s cubic-bezier(.2,.8,.2,1) forwards}
+.pip.ok{background:var(--ok);color:#fff} .pip.bad{background:var(--bad);color:#fff}
+@keyframes pipUp{0%{opacity:0;transform:scale(.4)}18%{opacity:1;transform:scale(1.25)}30%{transform:scale(1)}75%{opacity:1;transform:translateY(-46px)}100%{opacity:0;transform:translateY(-70px)}}
+.copt.right,.bopt.right{animation:optOk .5s cubic-bezier(.3,1.6,.5,1)}
+.copt.miss,.bopt.miss{animation:optBad .45s}
+@keyframes optOk{40%{transform:scale(1.04)}}
+@keyframes optBad{20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(2px)}}
+@media (prefers-reduced-motion: reduce){
+  .splash.on .sp-box,.splash.on .sp-rays,.sp-candle,.copt.right,.bopt.right,.copt.miss,.bopt.miss{animation:none}
+  .pip{animation:pipFade 1.1s ease forwards}
+  @keyframes pipFade{0%{opacity:0}15%,75%{opacity:1}100%{opacity:0}}
+}
 /* Final en pantallas angostas: las poses de festejo y derrota son más anchas, así que cada uno ocupa su tercio
    y Frestón flota más arriba y más chico, en el cielo entre los dos. */
 @media (max-width:560px){
@@ -623,6 +662,7 @@ body.modal{overflow:hidden}
   </div>
 </div>
 <div class="toast" id="toast" role="status"></div>
+<div class="splash" id="splash" aria-hidden="true"><div class="sp-box"><div class="sp-rays"></div><img id="sp-img" alt=""><img class="sp-candle" src="art/vela_apagada.webp" alt=""><b id="sp-t"></b><span id="sp-s"></span></div></div>
 
 <script>
 (function(){
@@ -1171,10 +1211,12 @@ function resolve(timeout){
     burst(CH.F,"gold",46,.3);burst(sealEl,"gold",24,.5);
     F.forEach((fi,k)=>{const f=R.panels[fi],fr=fromOf(f);if(fr&&fr!==f.w){setTimeout(()=>{stream(CH[f.w],CH[fr],"gold",36);kick()},k*500);setTimeout(()=>anim(CH[fr],"flash"),700+k*500)}});
     say(pick(R.clean?LINES.cleanOk:LINES.ok));
+    splash(true,R.clean?"¡Bien visto!":F.length>1?"¡Doble sello!":"¡Sello roto!",R.clean?`Frestón no tocó nada · +${pts}`:`+${pts} puntos`);
   }else{
     pose("F","laugh");anim(CH.F,"laugh");Music.sfx("bad");
     burst(CH.F,"violet",44,.3);
     drawCandles(lives);
+    splash(false,code===4?"¡Tiempo!":code===6?"¡Casi!":"¡Ja, ja, ja!",lives>0?(lives===1?"Te queda 1 vela":`Te quedan ${lives} velas`):"Se apagó la última vela");
     say(pick(code===4?LINES.time:code===2?LINES.missed:code===3?LINES.wrongClean:code===6?LINES.partial:trapHit&&LV.key==="g"?LINES.wrongTrap:LINES.wrongReal));
   }
   kick();
@@ -1210,7 +1252,7 @@ $("#clues").addEventListener("click",e=>{
   const cl=b.closest(".clue"),fi=+cl.dataset.f,p=RS[r].panels[fi],k=+b.dataset.k,ok=p.fake.clues[k][1]===1;
   cl.querySelectorAll(".copt").forEach(x=>{x.disabled=true;const kk=+x.dataset.k;if(p.fake.clues[kk][1]===1)x.classList.add("right");else if(x===b)x.classList.add("miss")});
   clueRes[r].push(ok?1:0);
-  if(ok){score+=40;$("#score").textContent=score;Music.sfx("ok")}
+  if(ok){score+=40;$("#score").textContent=score;Music.sfx("ok");pip(b,true,"+40 ✓")}else{Music.sfx("bad");pip(b,false,"✗ no era")}
   if(!$("#clues").querySelector(".copt:not(:disabled)")){document.querySelectorAll("#strip .note.later").forEach(n=>n.hidden=false);$("#fb-why").hidden=false;renderBalanza(RS[r])}
 });
 
@@ -1231,7 +1273,8 @@ $("#bal-opts").addEventListener("click",e=>{
   document.querySelectorAll("#bal-opts .bopt").forEach(x=>{x.disabled=true;const k=+x.dataset.o;if(k===B.ok)x.classList.add("right");else if(x===b)x.classList.add("miss")});
   const fb=$("#bal-fb");
   if(ok){score+=50;fb.className="bfb ok";fb.textContent=`¡Bien pesado! +50 · Entendiste qué mueve a ${WHO[B.who]}.`;burst(CH[B.who],"gold",30);kick();anim(CH[B.who],"flash")}
-  else{fb.className="bfb bad";fb.textContent="No era eso. Mirá la respuesta marcada en verde."}
+  else{fb.className="bfb bad";fb.textContent="No era eso. Mirá la respuesta marcada en verde.";Music.sfx("bad");pip(b,false,"✗ no era")}
+  if(ok)pip(b,true,"+50 ✓");
   $("#score").textContent=score;
   $("#m-q").textContent=R.mirror.q;$("#m-s").textContent=R.mirror.s;
   const mx=$("#m-mix");mx.hidden=!R.mix;mx.textContent=R.mix||"";
@@ -1312,6 +1355,21 @@ $("#copy-code").addEventListener("click",async()=>{
   catch(e){ta.focus();ta.select();toast("Seleccioné el código: copialo con Ctrl+C")}
 });
 
+/* ---------- Golpes en pantalla ---------- */
+let spT=null;
+function splash(ok,t,s){
+  const el=$("#splash");el.className="splash";void el.offsetWidth;
+  $("#sp-img").src=ok?"art/sello_roto.webp":"art/freston_face.webp";
+  $("#sp-t").textContent=t;$("#sp-s").textContent=s||"";$("#sp-s").hidden=!s;
+  el.className="splash on "+(ok?"ok":"bad");
+  clearTimeout(spT);spT=setTimeout(()=>{el.className="splash"},1600);
+}
+function pip(btn,ok,txt){
+  const r=btn.getBoundingClientRect(),d=document.createElement("div");
+  d.className="pip "+(ok?"ok":"bad");d.textContent=txt;
+  d.style.left=Math.min(innerWidth-50,Math.max(50,r.left+r.width*.82))+"px";d.style.top=(r.top+r.height/2)+"px";
+  document.body.appendChild(d);setTimeout(()=>d.remove(),1200);
+}
 /* ---------- Recompensas ---------- */
 let rwSteps=[],rwI=0,lastFocus=null;
 function openReward(solved){
