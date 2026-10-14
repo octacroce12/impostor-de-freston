@@ -331,7 +331,9 @@ textarea{font:inherit;width:100%;min-height:84px;padding:10px 12px;border-radius
 .lvl-tag{font-family:var(--game);font-weight:800;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
 .lvl b{font-family:var(--display);font-size:1.9rem;line-height:1}
 .lvl-d{font-weight:700;color:var(--ink-2);font-size:.97rem}
-.prize{margin-top:4px;align-self:flex-start;font-family:var(--game);font-weight:800;font-size:.85rem;background:#FFF6CC;border:2px solid var(--ink);border-radius:99px;padding:1px 10px 0}
+.prize{margin-top:6px;display:flex;flex-direction:column;gap:2px;font-family:var(--display);font-style:italic;font-size:1rem;line-height:1.25;color:#5a3a12;background:#FBF0D3;border:2px dashed #A9824A;border-radius:12px;padding:8px 12px}
+.pz-k{font-family:var(--game);font-style:normal;font-weight:800;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:#8a5a1c}
+.pz-k::before{content:"";display:inline-block;width:.8em;height:.8em;margin-right:6px;vertical-align:-1px;border-radius:50%;background:#B3261A;box-shadow:inset 0 0 0 2px #7A140C}
 .lvl:hover{transform:translateY(-3px);filter:none}
 .lvl.on{filter:none;transform:translateY(-4px);box-shadow:0 10px 0 var(--ink),0 0 0 5px var(--sun)}
 .lvl[data-lv="m"].on b{color:var(--q-d)} .lvl[data-lv="g"].on b{color:var(--f-d)}
@@ -477,11 +479,11 @@ body.modal{overflow:hidden}
     <div class="levels" id="levels" role="radiogroup" aria-label="Nivel de dificultad">
       <button type="button" class="lvl on" data-lv="m" role="radio" aria-checked="true">
         <img src="art/nivel_molino.webp" alt="">
-        <span class="lvl-body"><span class="lvl-tag">Nivel 1 · secundario</span><b>Molino</b><span class="lvl-d">Lo que se ve. Un impostor por escena, o ninguno.</span><span class="prize">Recompensa: el ventero te arma caballero</span></span>
+        <span class="lvl-body"><span class="lvl-tag">Nivel 1</span><b>Molino</b><span class="lvl-d">Lo que se ve. Un impostor por escena, o ninguno.</span><span class="prize"><span class="pz-k">Recompensa sellada</span>«Un libro de paja y cebada hará de misal, y una vela, de altar.»</span></span>
       </button>
       <button type="button" class="lvl" data-lv="g" role="radio" aria-checked="false">
         <img src="art/nivel_gigante_card.webp" alt="">
-        <span class="lvl-body"><span class="lvl-tag">Nivel 2 · terciario</span><b>Gigante</b><span class="lvl-d">Lo que hay que saber ver. Citas del texto, de 0 a 2 impostores y líneas fuera de tiempo.</span><span class="prize">Recompensa: Cide Hamete te escribe en su manuscrito</span></span>
+        <span class="lvl-body"><span class="lvl-tag">Nivel 2</span><b>Gigante</b><span class="lvl-d">Lo que hay que saber ver. Citas del texto, de 0 a 2 impostores y líneas fuera de tiempo.</span><span class="prize"><span class="pz-k">Recompensa sellada</span>«Unos papeles viejos, vendidos a un sedero, guardan un nombre que todavía no leíste.»</span></span>
       </button>
     </div>
     <p class="hint" id="lvl-rules"></p>
