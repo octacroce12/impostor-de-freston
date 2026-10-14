@@ -1034,11 +1034,19 @@ const Music=(()=>{
   }
   function setMode(m){mode=m}
   function toggle(){on=!on;store.set("fq-music",on?"on":"off");if(on)start();else stop();return on}
-  return {start,stop,sfx,toggle,setMode,get on(){return on}};
+  return {start,stop,sfx,toggle,setMode,get on(){return on},get playing(){return !!(timer&&ctx&&ctx.state==="running")}};
 })();
 function drawMusicBtn(){const b=$("#music-btn");b.setAttribute("aria-pressed",Music.on);b.textContent=Music.on?"♪ Música: sí":"♪ Música: no"}
-$("#music-btn").addEventListener("click",()=>{Music.toggle();drawMusicBtn()});
+$("#music-btn").addEventListener("click",()=>{if(Music.on&&!Music.playing)Music.start();else Music.toggle();drawMusicBtn()});
 drawMusicBtn();
+/* Los navegadores no dejan sonar nada hasta que la persona toca la página: la música arranca con el primer toque o tecla. */
+function unlockMusic(e){
+  if(e&&e.target&&e.target.closest&&e.target.closest("#music-btn"))return;
+  Music.start();
+  if(Music.playing||!Music.on)["pointerdown","keydown","touchstart"].forEach(t=>removeEventListener(t,unlockMusic,true));
+}
+["pointerdown","keydown","touchstart"].forEach(t=>addEventListener(t,unlockMusic,true));
+Music.start();
 
 /* ---------- Fondo con fundido ---------- */
 let bgFront=$("#bgA"),bgBack=$("#bgB");
