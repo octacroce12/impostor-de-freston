@@ -322,6 +322,21 @@ textarea{font:inherit;width:100%;min-height:84px;padding:10px 12px;border-radius
   .txt{font-size:1rem}
   .bar-hud{gap:8px}
 }
+/* Final en pantallas angostas: las poses de festejo y derrota son más anchas, así que cada uno ocupa su tercio
+   y Frestón flota más arriba y más chico, en el cielo entre los dos. */
+@media (max-width:560px){
+  .stage[data-end] .ch.f{--h:48%;bottom:34%}
+  .stage[data-end="win"] .ch.q{--h:76%;left:-2%}
+  .stage[data-end="win"] .ch.s{--h:62%;right:-4%}
+  .stage[data-end="lose"] .ch.q{--h:61%;left:-2%}
+  .stage[data-end="lose"] .ch.s{--h:74%;right:-3%}
+  .stage[data-end] .ground.q{left:0;width:30%} .stage[data-end] .ground.s{right:0;width:32%}
+}
+@media (max-width:380px){
+  .seal{width:18px}
+  .candle{width:19px}
+  .round-tag{font-size:.72rem;padding:0 6px}
+}
 @media (prefers-reduced-motion: reduce){
   /* Menos movimiento, no cero: los personajes respiran más suave y se quitan los desplazamientos grandes. */
   :root{--amp:.45}
