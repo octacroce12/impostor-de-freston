@@ -1,0 +1,988 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Juego ilustrado sobre la primera parte del Quijote: descubrí la línea que Frestón cambió entre Don Quijote y Sancho.">
+<meta property="og:title" content="El impostor de Frestón">
+<meta property="og:description" content="Un juego sobre la primera parte del Quijote y las dos miradas de Don Quijote y Sancho.">
+<meta property="og:image" content="art/bg_dia.webp">
+<link rel="icon" href="art/sello.webp" type="image/webp">
+<title>El impostor de Frestón</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Almendra:ital,wght@0,400;0,700;1,400&family=Baloo+2:wght@600;700;800&family=Nunito:wght@500;700;800&display=swap">
+<style>
+/* Layout: cielo cobalto con nubes (un solo look luminoso, deliberado). Escenario ilustrado arriba que cambia de lugar en cada ronda,
+   globo de Frestón colgando, y debajo la historieta: globos blancos con sombra dura roja (Don Quijote) o naranja (Sancho). */
+:root{
+  color-scheme:light;
+  --sky:#2F7BF0; --sky-2:#1C56C9; --sky-3:#123E9A; --cloud:#FFFFFF;
+  --ink:#14213D; --ink-2:#3C4A6B; --paper:#FFFFFF; --paper-2:#F3F7FF;
+  --on-sky:#FFFFFF; --on-sky-2:#DCEAFF;
+  --sun:#FFD23F; --sun-d:#C98A00;
+  --q:#E63946; --q-d:#A3202B; --q-l:#FFE8EA;
+  --s:#FF9F1C; --s-d:#B86500; --s-l:#FFF1DC;
+  --f:#8B5CF6; --f-d:#5B2FC4; --f-l:#F1EAFF;
+  --ok:#14B86E; --ok-d:#0B7A48; --bad:#FF4D3D; --bad-d:#B3261A;
+  --display:"Almendra","Iowan Old Style","Palatino Linotype",Georgia,serif;
+  --game:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --body:"Nunito","Segoe UI",system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+/* El fondo de la página acompaña el recorrido: cada escena tiene su luz (ver THEMES en el script). */
+@property --bg1{syntax:"<color>";inherits:true;initial-value:#E8923A}
+@property --bg2{syntax:"<color>";inherits:true;initial-value:#B9472B}
+@property --glow{syntax:"<color>";inherits:true;initial-value:rgba(255,236,190,.5)}
+html{background:var(--bg2)}
+body{--bg1:#E8923A;--bg2:#B9472B;--glow:rgba(255,236,190,.5);
+  color:var(--on-sky);font-family:var(--body);font-size:17px;line-height:1.5;background-color:var(--bg2);
+  background-image:
+    radial-gradient(16rem 7rem at 8% 6%,var(--glow),transparent 70%),
+    radial-gradient(20rem 8rem at 92% 14%,var(--glow),transparent 70%),
+    radial-gradient(28rem 12rem at 50% 60%,rgba(255,255,255,.08),transparent 70%),
+    linear-gradient(180deg,var(--bg1) 0%,var(--bg2) 85%);
+  background-repeat:no-repeat;min-height:100%;
+  transition:--bg1 1.4s ease,--bg2 1.4s ease,--glow 1.4s ease}
+.lede,.setup,.hint{text-shadow:0 2px 0 rgba(20,20,40,.45)}
+.hint{color:rgba(255,255,255,.9)}
+.scene-name{font-family:var(--game);font-weight:800;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:#fff;opacity:.9;text-shadow:0 2px 0 rgba(20,20,40,.45)}
+.wrap{max-width:920px;margin-inline:auto;padding-inline:16px;padding-block:14px 60px;display:flex;flex-direction:column;gap:22px}
+h1,h2,h3{font-family:var(--display);font-weight:700;line-height:1.05;margin:0;text-wrap:balance}
+p{margin:0}
+.label{font-family:var(--game);font-size:.82rem;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:var(--ink-2)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{font-family:var(--display);font-weight:700;font-size:1.2rem;color:#fff;text-shadow:0 2px 0 var(--ink)}
+.nav{display:flex;gap:8px}
+.nav button{font-family:var(--game);font-weight:800;font-size:.95rem;background:var(--paper);border:2px solid var(--ink);color:var(--ink);padding:3px 14px 1px;border-radius:99px;cursor:pointer;box-shadow:0 3px 0 var(--ink)}
+.nav button:hover{background:var(--sun)}
+:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+
+/* ---------- Escenario ---------- */
+.stagebox{position:relative}
+.stage{position:relative;height:clamp(300px,50vw,450px);border-radius:24px;overflow:hidden;border:4px solid var(--ink);
+  box-shadow:0 8px 0 var(--ink),0 22px 40px rgba(10,30,90,.35);background:var(--sky-2)}
+.bg{position:absolute;inset:-3%;width:106%;height:106%;object-fit:cover;object-position:50% 60%;opacity:0;transition:opacity .7s ease;animation:pan 30s ease-in-out infinite alternate}
+.bg.on{opacity:1}
+@keyframes pan{from{transform:translateX(-1.2%) scale(1)}to{transform:translateX(1.2%) scale(1.035)}}
+.stage .shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,33,61,.45) 0%,rgba(20,33,61,0) 22%,rgba(20,33,61,0) 78%,rgba(20,33,61,.35) 100%);pointer-events:none}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:5}
+.ch{position:absolute;bottom:-1%;height:var(--h);width:auto;transition:filter .3s,transform .35s cubic-bezier(.3,1.5,.5,1);transform-origin:50% 100%;user-select:none;-webkit-user-drag:none;filter:drop-shadow(0 6px 6px rgba(20,33,61,.35))}
+.ch.q{--h:94%;left:1%;z-index:3}
+.ch.s{--h:86%;right:0;z-index:3}
+.ch.f{--h:72%;left:50%;bottom:9%;z-index:2;translate:-50% 0;animation:bob 3.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-10px) rotate(-1.5deg)}}
+.ground{position:absolute;bottom:2%;height:5%;border-radius:50%;background:rgba(20,33,61,.35);filter:blur(5px);z-index:2}
+.ground.q{left:4%;width:24%} .ground.s{right:3%;width:28%}
+.stage.pick .ch.q,.stage.pick .ch.s{filter:brightness(.6) saturate(.7)}
+.stage.pick .ch.hot{filter:drop-shadow(0 0 14px var(--sun)) brightness(1.06);transform:scale(1.05)}
+.ch.flash{animation:chflash .9s ease-out}
+@keyframes chflash{30%{filter:drop-shadow(0 0 26px var(--sun)) brightness(1.25);transform:scale(1.08)}}
+.ch.f.hit{animation:hit .8s ease-out}
+@keyframes hit{0%{transform:none}15%{transform:translateX(-10px) rotate(-6deg)}35%{transform:translateX(9px) rotate(5deg)}55%{transform:translateX(-5px) rotate(-3deg)}100%{transform:none}}
+.ch.f.laugh{animation:laugh .9s ease-out}
+@keyframes laugh{20%{transform:translateY(-18px) scale(1.08)}40%{transform:translateY(0) scale(1)}60%{transform:translateY(-10px) scale(1.05)}100%{transform:none}}
+.stage[data-end] .ch.f{animation:none}
+.stage[data-end="win"] .ch.q,.stage[data-end="win"] .ch.s{filter:drop-shadow(0 0 16px var(--sun))}
+.stage[data-end="win"] .ch.f{transform:scale(.88)}
+.stage[data-end="lose"] .ch.f{transform:scale(1.12);filter:drop-shadow(0 0 22px var(--f))}
+/* HUD dentro del escenario */
+.hud-in{position:absolute;top:0;left:0;right:0;z-index:6;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px}
+.round-tag{font-family:var(--game);font-weight:800;font-size:.95rem;background:var(--sun);color:var(--ink);border:2px solid var(--ink);border-radius:99px;padding:1px 12px 0;white-space:nowrap;box-shadow:0 3px 0 var(--ink)}
+.seals{display:flex;gap:2px;flex-wrap:nowrap}
+.seal{width:clamp(24px,5vw,40px);height:auto;display:block;transition:filter .3s,opacity .3s,transform .3s;filter:grayscale(1) brightness(1.3);opacity:.55}
+.seal.now{filter:drop-shadow(0 0 8px #fff);opacity:1;animation:pulse 1.4s ease-in-out infinite}
+.seal.won{filter:drop-shadow(0 0 6px var(--sun));opacity:1;transform:scale(1.1)}
+.seal.lost{filter:drop-shadow(0 0 6px var(--f));opacity:1}
+@keyframes pulse{50%{transform:scale(1.18)}}
+.candles{display:flex;gap:0;align-items:flex-end}
+.candle{width:clamp(26px,5vw,38px);height:auto;display:block;transition:transform .3s}
+.candle.out{transform:scale(.92)}
+/* Globo de Frestón */
+.say{position:relative;z-index:7;margin:-30px 14px 0;display:flex;gap:12px;align-items:center;background:var(--paper);color:var(--ink);
+  border:3px solid var(--ink);border-radius:18px;box-shadow:6px 6px 0 var(--f);padding:9px 14px 10px 10px}
+.say::before{content:"";position:absolute;top:-14px;left:50%;width:22px;height:22px;background:var(--paper);border-left:3px solid var(--ink);border-top:3px solid var(--ink);transform:translateX(-50%) rotate(45deg)}
+.say img{width:56px;height:56px;border-radius:50%;border:3px solid var(--ink);box-shadow:0 0 0 3px var(--f);background:var(--f-l);flex:none;object-fit:cover}
+.say .who{font-family:var(--game);font-weight:800;font-size:.8rem;letter-spacing:.14em;color:var(--f-d);text-transform:uppercase;line-height:1}
+.say p{font-family:var(--display);font-size:clamp(1.05rem,3.5vw,1.3rem);line-height:1.22;font-style:italic}
+.say p.pop{animation:pop .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ---------- Botones ---------- */
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--game);font-weight:800;font-size:1.08rem;border:3px solid var(--ink);background:var(--sun);color:var(--ink);
+  padding:9px 22px 7px;border-radius:14px;cursor:pointer;box-shadow:0 5px 0 var(--ink);transition:transform .08s,box-shadow .08s,filter .15s}
+.btn img{width:28px;height:28px;margin:-6px 0 -4px -6px}
+.btn:hover{filter:brightness(1.06)}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--ink)}
+.btn.red{background:var(--bad);color:#fff}
+.btn.white{background:var(--paper);color:var(--ink)}
+.btn.ghost{background:rgba(255,255,255,.12);color:var(--on-sky);border-color:var(--on-sky);box-shadow:0 5px 0 rgba(20,20,40,.4)}
+.btn:disabled{background:#C9D6EE;color:#6B7A99;border-color:#6B7A99;box-shadow:none;cursor:not-allowed;filter:none;transform:none}
+.btn:disabled img{filter:grayscale(1);opacity:.6}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+
+/* ---------- Intro ---------- */
+.intro{display:flex;flex-direction:column;gap:20px}
+.title{font-size:clamp(2.6rem,9.5vw,4.8rem);color:var(--sun);text-shadow:0 3px 0 var(--sun-d),0 7px 0 var(--ink),0 12px 24px rgba(10,30,90,.4)}
+.title em{display:block;font-style:normal;font-size:.4em;color:var(--on-sky);text-shadow:0 2px 0 var(--ink);letter-spacing:.02em;margin-bottom:8px;font-family:var(--game);font-weight:800}
+.lede{font-size:1.15rem;max-width:62ch;color:var(--on-sky);text-shadow:0 1px 0 rgba(20,33,61,.35)}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin:0;padding:0;list-style:none;counter-reset:st}
+.steps li{position:relative;background:var(--paper);color:var(--ink);border:3px solid var(--ink);border-radius:18px;padding:16px 16px 14px 64px;display:flex;flex-direction:column;gap:4px;min-width:0;counter-increment:st;box-shadow:5px 5px 0 var(--c)}
+.steps li::before{content:counter(st);position:absolute;left:14px;top:14px;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-family:var(--game);font-weight:800;font-size:1.25rem;background:var(--c);color:#fff;border:3px solid var(--ink)}
+.steps li:nth-child(1){--c:var(--q)} .steps li:nth-child(2){--c:var(--f)} .steps li:nth-child(3){--c:var(--s)}
+.steps b{font-family:var(--display);font-size:1.3rem;font-weight:700}
+.steps span{color:var(--ink-2);font-size:.97rem}
+.setup-card{display:flex;flex-wrap:wrap;gap:16px 24px;align-items:flex-end;background:var(--paper);color:var(--ink);border:3px solid var(--ink);border-radius:20px;padding:18px;box-shadow:6px 6px 0 var(--sun)}
+.field{display:flex;flex-direction:column;gap:6px;flex:1 1 240px;min-width:0}
+.field input{font:inherit;font-weight:700;padding:11px 14px;border-radius:12px;border:3px solid var(--ink);background:var(--paper-2);color:var(--ink)}
+.toggle{display:flex;gap:10px;align-items:center;font-family:var(--game);font-weight:800;cursor:pointer;padding-bottom:8px}
+.toggle input{position:absolute;opacity:0;width:1px;height:1px;margin:0;pointer-events:none}
+.toggle .track{position:relative;flex:none;width:52px;height:30px;border-radius:99px;background:#D3DAE8;border:3px solid var(--ink);box-shadow:0 3px 0 var(--ink);transition:background .2s}
+.toggle .knob{position:absolute;top:50%;left:3px;width:20px;height:20px;margin-top:-10px;border-radius:50%;background:var(--paper);border:2px solid var(--ink);transition:transform .2s cubic-bezier(.3,1.4,.5,1)}
+.toggle input:checked + .track{background:var(--ok)}
+.toggle input:checked + .track .knob{transform:translateX(20px)}
+.toggle input:focus-visible + .track{outline:3px solid var(--sun);outline-offset:3px}
+.hint{font-size:.93rem;color:var(--on-sky-2)}
+.card-hint{color:var(--ink-2)}
+
+/* ---------- Ronda ---------- */
+.round{display:flex;flex-direction:column;gap:16px}
+.bar-hud{display:flex;align-items:center;gap:14px;background:var(--paper);border:3px solid var(--ink);border-radius:99px;padding:6px 8px 6px 14px;box-shadow:0 4px 0 var(--ink)}
+.fuse{flex:1;height:14px;border-radius:99px;background:#DCE6F7;border:2px solid var(--ink);overflow:hidden}
+.fuse i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--bad),var(--s) 40%,var(--sun));transform-origin:left;transition:transform .25s linear}
+.fuse.low{animation:blink .6s steps(2) infinite}
+@keyframes blink{50%{background:#FFD6D1}}
+.pts{font-family:var(--game);font-weight:800;font-size:1.2rem;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap;background:var(--sun);border:2px solid var(--ink);border-radius:99px;padding:0 12px}
+.pts small{font-size:.72rem;letter-spacing:.1em;margin-right:4px}
+.combo{font-family:var(--game);font-weight:800;color:var(--f-d);font-size:.95rem;white-space:nowrap}
+.rhead{display:flex;flex-direction:column;gap:6px}
+.chip{align-self:flex-start;font-family:var(--game);font-weight:800;font-size:.85rem;letter-spacing:.06em;background:var(--q);color:#fff;border:2px solid var(--ink);border-radius:99px;padding:1px 12px 0;box-shadow:0 3px 0 var(--ink)}
+.rtitle{font-size:clamp(2.1rem,7vw,3rem);color:var(--paper);text-shadow:0 3px 0 var(--ink)}
+.setup{max-width:62ch;color:var(--on-sky);font-size:1.08rem;font-weight:700}
+.strip{display:flex;flex-direction:column;gap:14px;padding-block:6px}
+.prow{display:flex;opacity:0;animation:slideL .45s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:calc(var(--i) * 90ms)}
+.prow.s{justify-content:flex-end;animation-name:slideR}
+@keyframes slideL{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:none}}
+@keyframes slideR{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}
+.panel{font:inherit;color:inherit;background:none;border:0;padding:0;text-align:left;cursor:pointer;display:flex;gap:12px;align-items:flex-start;width:min(100%,660px)}
+.prow.s .panel{flex-direction:row-reverse}
+.ava{flex:none;width:72px;height:72px;border-radius:16px;object-fit:cover;border:3px solid var(--ink);box-shadow:0 0 0 4px var(--c),0 6px 0 4px var(--ink);background:var(--cl);transition:transform .2s;margin-top:6px}
+.prow.q .ava{--c:var(--q);--cl:var(--q-l)} .prow.s .ava{--c:var(--s);--cl:var(--s-l)}
+.bub{position:relative;flex:1;display:flex;flex-direction:column;gap:4px;min-width:0;padding:20px 18px 14px;border:3px solid var(--ink);border-radius:14px;
+  background:var(--paper);color:var(--ink);box-shadow:6px 6px 0 var(--q);transition:transform .15s,box-shadow .15s;margin-top:12px}
+.prow.s .bub{box-shadow:-6px 6px 0 var(--s)}
+.bub .who{position:absolute;top:-14px;left:14px;font-family:var(--game);font-weight:800;font-size:.82rem;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:var(--q);border:2px solid var(--ink);border-radius:8px;padding:1px 10px 0;line-height:1.5}
+.prow.s .bub .who{background:var(--s);left:auto;right:14px;color:var(--ink)}
+.txt{font-size:1.08rem;line-height:1.42;font-weight:600}
+.acot{display:block;font-style:italic;font-weight:700;color:var(--ink-2);font-size:.92rem;margin-bottom:2px}
+.prow.s .panel.sel .bub::after,.prow.s .panel.imp .bub::after{right:auto;left:14px}
+.panel.sel .bub::after,.panel.imp .bub::after{top:auto!important;bottom:-14px}
+.panel:hover .bub{transform:translateY(-3px)}
+.panel:hover .ava{transform:scale(1.06) rotate(-4deg)}
+.panel:focus-visible{outline:none}
+.panel:focus-visible .bub{outline:3px solid var(--sun);outline-offset:3px}
+.panel.sel .bub{transform:translateY(-4px) rotate(-.6deg);background:var(--f-l);box-shadow:6px 6px 0 var(--f),0 0 0 4px var(--f)}
+.prow.s .panel.sel .bub{transform:translateY(-4px) rotate(.6deg);box-shadow:-6px 6px 0 var(--f),0 0 0 4px var(--f)}
+.panel.sel .bub::after{content:"¿Impostor?";position:absolute;top:-15px;right:12px;font-family:var(--game);font-weight:800;font-size:.82rem;background:var(--f);color:#fff;border:2px solid var(--ink);border-radius:99px;padding:0 10px}
+.panel.imp .bub{background:#FFE6E3;box-shadow:6px 6px 0 var(--bad),0 0 0 4px var(--bad)}
+.prow.s .panel.imp .bub{box-shadow:-6px 6px 0 var(--bad),0 0 0 4px var(--bad)}
+.panel.imp .bub::after{content:"¡Impostor!";position:absolute;top:-15px;right:12px;font-family:var(--game);font-weight:800;font-size:.82rem;background:var(--bad);color:#fff;border:2px solid var(--ink);border-radius:99px;padding:0 10px}
+.panel.wrong .bub{opacity:.88;box-shadow:none;border-style:dashed}
+.panel:disabled{cursor:default}
+.panel:disabled:hover .bub{transform:none}
+.panel:disabled:hover .ava{transform:none}
+.note{margin-top:6px;font-size:.9rem;font-weight:800;line-height:1.3;color:var(--bad-d)}
+.note.mute{color:var(--ink-2);font-weight:700}
+.actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.result{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px 16px;align-items:start;background:var(--paper);color:var(--ink);border:4px solid var(--ink);border-radius:22px;padding:16px;box-shadow:7px 7px 0 var(--c);animation:rise .4s cubic-bezier(.2,.8,.2,1)}
+.result.ok{--c:var(--ok);--cd:var(--ok-d)} .result.bad{--c:var(--bad);--cd:var(--bad-d)}
+@keyframes rise{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+.burst{width:78px;height:78px;display:grid;place-items:center;font-family:var(--game);font-weight:800;font-size:1.1rem;color:#fff;background:var(--c);
+  clip-path:polygon(50% 0,61% 18%,82% 8%,79% 30%,100% 36%,84% 52%,98% 70%,76% 72%,74% 94%,56% 82%,40% 100%,34% 78%,12% 88%,18% 66%,0 56%,16% 40%,4% 20%,26% 22%,30% 2%);transform:rotate(-8deg)}
+.result .v{font-family:var(--display);font-size:clamp(1.6rem,5vw,2rem);line-height:1.05;color:var(--cd)}
+.result .body{display:flex;flex-direction:column;gap:8px;min-width:0;font-weight:600}
+.result .think{color:var(--ink-2);font-size:.97rem;border-left:4px solid var(--sun);padding-left:10px}
+.result .row{grid-column:1 / -1}
+.balanza,.mirror{grid-column:1 / -1}
+.balanza{display:flex;flex-direction:column;gap:10px;background:var(--paper-2);border:3px solid var(--ink);border-radius:16px;padding:14px}
+.bhead{display:flex;align-items:center;justify-content:center;gap:10px}
+.bhead img{width:36px;height:36px;border-radius:10px;border:2px solid var(--ink)}
+.bhead .label{color:var(--f-d)}
+.bq{font-family:var(--display);font-weight:700;font-size:1.3rem;text-align:center;line-height:1.15}
+.bopts{display:flex;flex-direction:column;gap:8px}
+.bopt{font:inherit;font-weight:700;text-align:left;background:var(--paper);color:var(--ink);border:3px solid var(--ink);border-radius:12px;padding:10px 14px;cursor:pointer;box-shadow:0 4px 0 var(--ink);transition:transform .08s,background .15s}
+.bopt:hover{background:var(--f-l)}
+.bopt:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.bopt:disabled{cursor:default;transform:none}
+.bopt:disabled:hover{background:var(--paper)}
+.bopt.right{background:#DDF7EA;border-color:var(--ok-d);box-shadow:0 4px 0 var(--ok-d)}
+.bopt.miss{background:#FFE6E3;border-color:var(--bad-d);box-shadow:0 4px 0 var(--bad-d);text-decoration:line-through}
+.bfb{font-weight:800;text-align:center;min-height:1.3em}
+.bfb.ok{color:var(--ok-d)} .bfb.bad{color:var(--bad-d)}
+.mirror{display:grid;grid-template-columns:1fr 1fr;gap:10px;animation:rise .4s cubic-bezier(.2,.8,.2,1)}
+.mtitle{grid-column:1 / -1;text-align:center;color:var(--f-d)}
+.mcol{display:flex;gap:10px;align-items:flex-start;border:3px solid var(--ink);border-radius:14px;padding:10px 12px;min-width:0}
+.mcol.q{background:var(--q-l);box-shadow:0 4px 0 var(--q)} .mcol.s{background:var(--s-l);box-shadow:0 4px 0 var(--s)}
+.mcol img{width:44px;height:44px;border-radius:10px;border:2px solid var(--ink);flex:none}
+.mcol b{font-family:var(--game);font-weight:800;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase}
+.mcol.q b{color:var(--q-d)} .mcol.s b{color:var(--s-d)}
+.mcol p{font-weight:700;line-height:1.3}
+.mix{grid-column:1 / -1;background:var(--f-l);border:3px solid var(--ink);border-radius:14px;padding:10px 14px;font-weight:700;box-shadow:0 4px 0 var(--f)}
+.mix::before{content:"Contagio";display:inline-block;margin-right:8px;font-family:var(--game);font-weight:800;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;background:var(--f);color:#fff;border-radius:99px;padding:0 9px}
+@media (max-width:560px){.mirror{grid-template-columns:1fr}}
+/* Retrato final */
+.retrato{background:var(--paper);color:var(--ink);border:4px solid var(--ink);border-radius:24px;padding:18px;box-shadow:8px 8px 0 var(--f);display:flex;flex-direction:column;gap:16px}
+.ret-head{display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:center}
+.ret-head img{width:clamp(56px,12vw,84px);height:auto;border-radius:16px;border:3px solid var(--ink)}
+.ret-head img:first-child{box-shadow:0 0 0 4px var(--q)} .ret-head img:last-child{box-shadow:0 0 0 4px var(--s)}
+.ret-head .label{color:var(--f-d)}
+.ret-head h3{font-size:clamp(1.6rem,5vw,2.2rem)}
+.ret-scroll{overflow-x:auto}
+.ret-table{width:100%;min-width:520px;border-collapse:separate;border-spacing:0 8px}
+.ret-table th{font-family:var(--game);font-weight:800;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;text-align:left;padding:0 12px}
+.ret-table th.q{color:var(--q-d)} .ret-table th.s{color:var(--s-d)}
+.ret-table td{padding:10px 12px;vertical-align:top;font-weight:700;line-height:1.3;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink)}
+.ret-table td:first-child{border-left:2px solid var(--ink);border-radius:12px 0 0 12px;font-family:var(--display);font-size:1.1rem;background:var(--paper-2);white-space:nowrap}
+.ret-table td:last-child{border-right:2px solid var(--ink);border-radius:0 12px 12px 0}
+.ret-table td.q{background:var(--q-l)} .ret-table td.s{background:var(--s-l)}
+.ret-table tr.mixrow td:first-child::after{content:"contagio";display:block;font-family:var(--game);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:#fff;background:var(--f);border-radius:99px;padding:0 8px;width:max-content;margin-top:4px}
+.ret-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.rc{border:3px solid var(--ink);border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+.rc b{font-family:var(--display);font-size:1.25rem}
+.rc p{font-weight:600;font-size:.97rem}
+.rc.op{background:var(--q-l);box-shadow:0 5px 0 var(--q)} .rc.pa{background:#FFF6CC;box-shadow:0 5px 0 var(--sun-d)} .rc.co{background:var(--f-l);box-shadow:0 5px 0 var(--f)}
+.stat:nth-child(5){--c:var(--ok-d)}
+.shake{animation:shake .4s}
+@keyframes shake{20%{transform:translateX(-8px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+
+/* ---------- Resultado ---------- */
+.final{display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
+.rank{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px 18px;align-items:center;background:var(--paper);color:var(--ink);border:4px solid var(--ink);border-radius:24px;padding:18px 20px;box-shadow:8px 8px 0 var(--sun)}
+.rank img{width:clamp(96px,22vw,150px);height:auto;animation:medal 1s cubic-bezier(.3,1.6,.5,1)}
+@keyframes medal{from{transform:scale(.2) rotate(-30deg);opacity:0}to{transform:none;opacity:1}}
+.rank .txts{display:flex;flex-direction:column;gap:6px;min-width:0}
+.rank h2{font-size:clamp(1.9rem,6vw,2.6rem);color:var(--q)}
+.rank p{max-width:62ch;font-weight:600}
+.scorecard{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.stat{background:var(--paper);color:var(--ink);border:3px solid var(--ink);border-radius:18px;padding:12px 16px;display:flex;flex-direction:column;gap:2px;min-width:0;box-shadow:0 5px 0 var(--c)}
+.stat b{font-family:var(--game);font-weight:800;font-size:clamp(2rem,7vw,2.8rem);line-height:1;color:var(--c);font-variant-numeric:tabular-nums}
+.stat span{font-size:.9rem;color:var(--ink-2);font-weight:700}
+.stat:nth-child(1){--c:var(--sun-d)} .stat:nth-child(2){--c:var(--f)} .stat:nth-child(3){--c:var(--q)} .stat:nth-child(4){--c:var(--s-d)}
+.sec-title{font-size:1.6rem;color:var(--paper);text-shadow:0 3px 0 var(--ink)}
+.rounds{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin:0;padding:0;list-style:none}
+.rounds li{background:var(--paper);color:var(--ink);border:3px solid var(--ink);border-radius:16px;padding:10px 12px 12px;display:flex;flex-direction:column;gap:6px;min-width:0;box-shadow:0 4px 0 var(--c)}
+.rounds li.ok{--c:var(--ok)} .rounds li.bad{--c:var(--bad)} .rounds li.na{--c:#9AA8C4}
+.rounds .rt{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.rounds .rt img{width:34px;height:34px;flex:none}
+.rounds h3{font-size:1.2rem;flex:1;min-width:0}
+.tag{font-family:var(--game);font-weight:800;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:#fff;background:var(--c);border-radius:99px;padding:0 8px;white-space:nowrap}
+.rounds p{color:var(--ink-2);font-size:.93rem}
+.thumb{height:70px;border-radius:10px;border:2px solid var(--ink);background-size:cover;background-position:center}
+textarea{font:inherit;width:100%;min-height:84px;padding:10px 12px;border-radius:12px;border:3px solid var(--ink);background:var(--paper-2);color:var(--ink);resize:vertical}
+.codebox{display:flex;flex-direction:column;gap:8px;background:var(--paper);color:var(--ink);border:3px dashed var(--ink);border-radius:18px;padding:16px}
+.codebox .hint{color:var(--ink-2)}
+.codebox textarea{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.78rem;min-height:80px}
+.codebox .btn.ghost{color:var(--ink);border-color:var(--ink);box-shadow:0 5px 0 var(--ink)}
+.gbars{display:flex;flex-direction:column;gap:12px;margin:0;padding:16px;list-style:none;background:var(--paper);color:var(--ink);border:3px solid var(--ink);border-radius:18px;box-shadow:6px 6px 0 var(--f)}
+.gbars li{display:flex;flex-direction:column;gap:4px;min-width:0}
+.gbars .t{display:flex;justify-content:space-between;gap:10px;font-weight:800}
+.gbars .t span:last-child{color:var(--f-d);white-space:nowrap;font-family:var(--game);font-variant-numeric:tabular-nums}
+.gbars .hint{color:var(--ink-2)}
+.gbar{height:18px;border-radius:99px;overflow:hidden;background:#E3EAF7;border:2px solid var(--ink)}
+.gbar i{display:block;height:100%;background:linear-gradient(90deg,var(--f),var(--q) 60%,var(--sun))}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--sun);color:var(--ink);border:3px solid var(--ink);padding:8px 16px;border-radius:12px;font-family:var(--game);font-weight:800;opacity:0;pointer-events:none;transition:opacity .2s;z-index:20;max-width:calc(100% - 32px)}
+.toast.on{opacity:1}
+@media (max-width:560px){
+  .ch.q{--h:84%;left:-4%} .ch.s{--h:76%;right:-5%} .ch.f{--h:62%;bottom:16%}
+  .say{margin-inline:6px}
+  .hud-in{padding:8px;gap:6px}
+  .round-tag{font-size:.78rem;padding:0 8px}
+  .seal{width:21px}
+  .candle{width:22px}
+  .ava{width:50px;height:50px;border-radius:12px}
+  .panel{gap:8px}
+  .bub{padding:18px 12px 12px}
+  .txt{font-size:1rem}
+  .bar-hud{gap:8px}
+}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  .prow{opacity:1}
+}
+</style>
+<style>html,body{margin:0}img{max-width:100%}</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header class="top">
+    <span class="brand">El impostor de Frestón</span>
+    <nav class="nav" aria-label="Secciones">
+      <button type="button" id="nav-intro">Inicio</button>
+      <button type="button" id="nav-grp">Mapa del grupo</button>
+    </nav>
+  </header>
+
+  <div class="stagebox">
+    <div class="stage" id="stage">
+      <img class="bg on" id="bgA" src="art/bg_dia.webp" alt="" aria-hidden="true">
+      <img class="bg" id="bgB" alt="" aria-hidden="true">
+      <div class="shade"></div>
+      <div class="ground q"></div><div class="ground s"></div>
+      <img class="ch f" id="ch-F" src="art/freston.webp" alt="Frestón, el sabio encantador">
+      <img class="ch q" id="ch-Q" src="art/quijote.webp" alt="Don Quijote con su lanza y la bacía como yelmo">
+      <img class="ch s" id="ch-S" src="art/sancho.webp" alt="Sancho Panza con su bota de vino y pan">
+      <canvas id="fx" aria-hidden="true"></canvas>
+      <div class="hud-in">
+        <span class="round-tag" id="round-tag">Parte I</span>
+        <div class="seals" id="seals" role="img" aria-label="Sellos de Frestón"></div>
+        <div class="candles" id="candles" role="img" aria-label="3 velas encendidas"></div>
+      </div>
+    </div>
+    <div class="say" aria-live="polite">
+      <img src="art/freston_face.webp" alt="">
+      <div><span class="who">Frestón</span><p id="say"></p></div>
+    </div>
+  </div>
+
+  <section id="s-intro" class="intro">
+    <h1 class="title"><em>Un juego sobre la primera parte del Quijote</em>El impostor de Frestón</h1>
+    <p class="lede">Frestón es el sabio encantador al que Don Quijote le echa la culpa de todo. Esta vez se metió en sus diálogos: en cada escena puso en boca de uno lo que en el libro dice el otro. Para descubrirlo hay que conocer cómo piensa cada uno. ¿Lo descubrís?</p>
+    <ol class="steps">
+      <li><b>Leé el diálogo</b><span>Cinco parlamentos entre Don Quijote y Sancho, con sus acotaciones.</span></li>
+      <li><b>Acusá al impostor</b><span>Tocá la línea que no corresponde a quien la dice y confirmá.</span></li>
+      <li><b>Cuidado con las trampas</b><span>A veces Frestón no tocó nada. Si acusás a un inocente, se apaga una vela. Después, pesá en la balanza qué mueve a cada uno.</span></li>
+    </ol>
+    <div class="setup-card">
+      <div class="field">
+        <label for="nombre" class="label">Tu nombre</label>
+        <input id="nombre" type="text" maxlength="40" autocomplete="off" placeholder="Para tu código de resultados">
+      </div>
+      <label class="toggle"><input type="checkbox" id="notimer"><span class="track" aria-hidden="true"><span class="knob"></span></span>Jugar sin reloj</label>
+      <button type="button" class="btn" id="start">¡Desafiar a Frestón!</button>
+    </div>
+    <div class="row">
+      <p class="hint">8 rondas, 3 velas. Cada encantamiento que descubrís rompe uno de los ocho sellos.</p>
+      <button type="button" class="btn ghost" id="intro-grp" style="font-size:.95rem;padding:4px 14px 2px">Armar el mapa del grupo</button>
+    </div>
+  </section>
+
+  <section id="s-game" class="round" hidden>
+    <div class="bar-hud">
+      <div class="fuse" id="fuse" role="timer" aria-label="Tiempo de la ronda"><i></i></div>
+      <span class="combo" id="combo"></span>
+      <span class="pts"><small>PTS</small><span id="score">0</span></span>
+    </div>
+    <div class="rhead">
+      <span class="chip" id="r-cap"></span>
+      <h2 class="rtitle" id="r-title"></h2>
+      <p class="setup" id="r-setup"></p>
+    </div>
+    <div class="strip" id="strip"></div>
+    <div class="actions" id="actions">
+      <button type="button" class="btn red" id="accuse" disabled><img src="art/lupa.webp" alt="">Acusar esta línea</button>
+      <button type="button" class="btn white" id="clean">Frestón no tocó nada</button>
+      <span class="hint" id="pick-hint">Tocá una línea del diálogo para marcarla.</span>
+    </div>
+    <div class="result" id="fbp" hidden aria-live="polite">
+      <div class="burst" id="fb-burst"></div>
+      <div class="body">
+        <p class="v" id="fb-v"></p>
+        <p id="fb-why"></p>
+        <p class="think" id="fb-scene"></p>
+      </div>
+      <div class="balanza" id="bal">
+        <div class="bhead"><img src="art/quijote_face.webp" alt=""><span class="label">La balanza · +50</span><img src="art/sancho_face.webp" alt=""></div>
+        <p class="bq" id="bal-q"></p>
+        <div class="bopts" id="bal-opts"></div>
+        <p class="bfb" id="bal-fb" aria-live="polite"></p>
+      </div>
+      <div class="mirror" id="mirror" hidden>
+        <span class="label mtitle">El espejo de la escena</span>
+        <div class="mcol q"><img src="art/quijote_face.webp" alt=""><div><b>Don Quijote ve</b><p id="m-q"></p></div></div>
+        <div class="mcol s"><img src="art/sancho_face.webp" alt=""><div><b>Sancho ve</b><p id="m-s"></p></div></div>
+        <p class="mix" id="m-mix" hidden></p>
+      </div>
+      <div class="row"><button type="button" class="btn" id="next" hidden>Siguiente ronda</button></div>
+    </div>
+  </section>
+
+  <section id="s-res" class="final" hidden>
+    <div class="rank">
+      <img id="res-medal" src="art/medalla_oro.webp" alt="">
+      <div class="txts">
+        <span class="label" id="res-name"></span>
+        <h2 id="res-prof"></h2>
+        <p id="res-txt"></p>
+      </div>
+    </div>
+    <div class="scorecard">
+      <div class="stat"><b id="res-n"></b><span>sellos rotos</span></div>
+      <div class="stat"><b id="res-pts"></b><span>puntos</span></div>
+      <div class="stat"><b id="res-combo"></b><span>mejor racha</span></div>
+      <div class="stat"><b id="res-lives"></b><span>velas encendidas</span></div>
+      <div class="stat"><b id="res-bal"></b><span>miradas comprendidas en la balanza</span></div>
+    </div>
+    <section class="retrato" aria-labelledby="ret-t">
+      <div class="ret-head">
+        <img src="art/quijote_face.webp" alt="">
+        <div><span class="label">El paralelo</span><h3 id="ret-t">Retrato de dos miradas</h3></div>
+        <img src="art/sancho_face.webp" alt="">
+      </div>
+      <div class="ret-scroll"><table class="ret-table" id="ret-table"></table></div>
+      <div class="ret-cards">
+        <div class="rc op"><b>En qué se oponen</b><p>Don Quijote mira el mundo desde los libros y el ideal: transforma lo que ve. Sancho lo mira desde el cuerpo y la conveniencia: nombra lo que ve y calcula lo que cuesta.</p></div>
+        <div class="rc pa"><b>En qué se parecen</b><p>Los dos se mueven por una promesa: la fama y Dulcinea, uno; la ínsula, el otro. Y los dos son leales: ninguno abandona al otro, aunque no se entiendan.</p></div>
+        <div class="rc co"><b>Dónde se contagian</b><p>Sancho cree en la ficción cuando le conviene (Micomicona) y Don Quijote acepta las pruebas de Sancho, pero las acomoda a su ideal (la jaula). El «baciyelmo» es el símbolo de esa mezcla.</p></div>
+      </div>
+    </section>
+    <h3 class="sec-title">Ronda por ronda</h3>
+    <ul class="rounds" id="res-fb"></ul>
+    <div class="codebox">
+      <span class="label">Tu código de resultados</span>
+      <p class="hint">Copialo y mandáselo a quien arme el mapa del grupo.</p>
+      <textarea id="res-code" readonly aria-label="Código de resultados"></textarea>
+      <div class="row">
+        <button type="button" class="btn" id="copy-code">Copiar código</button>
+        <button type="button" class="btn ghost" id="restart">Jugar de nuevo</button>
+        <button type="button" class="btn ghost" id="res-grp">Mapa del grupo</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="s-grp" class="intro" hidden>
+    <h2 class="title" style="font-size:clamp(2.2rem,7vw,3.4rem)">Mapa del grupo</h2>
+    <p class="lede">Pegá los códigos de tus compañeros, uno por línea. Vas a ver cuántos sellos rompió el grupo, qué escenas costaron más y qué línea real engañó a más gente.</p>
+    <div class="codebox">
+      <label for="codes" class="label">Códigos</label>
+      <textarea id="codes" style="min-height:110px" placeholder="Un código por línea"></textarea>
+      <div class="row">
+        <button type="button" class="btn" id="grp-build">Armar el mapa</button>
+        <button type="button" class="btn ghost" id="grp-sample">Ver con datos de ejemplo</button>
+        <button type="button" class="btn ghost" id="grp-clear">Limpiar</button>
+      </div>
+      <p class="hint" id="grp-msg" aria-live="polite"></p>
+    </div>
+    <div id="grp-out" hidden style="display:flex;flex-direction:column;gap:18px">
+      <p class="label" id="grp-flag" style="color:var(--on-sky)"></p>
+      <div class="scorecard" id="grp-stats"></div>
+      <h3 class="sec-title">Qué porcentaje resolvió cada escena</h3>
+      <ul class="gbars" id="grp-bars"></ul>
+    </div>
+  </section>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const WHO={Q:"Don Quijote",S:"Sancho"},FACE={Q:"art/quijote_face.webp",S:"art/sancho_face.webp"};
+const ROMAN=["I","II","III","IV","V","VI","VII","VIII"];
+const ART={
+  F:{base:"art/freston.webp",mad:"art/freston_enojado.webp",laugh:"art/freston_rie.webp"},
+  Q:{base:"art/quijote.webp",win:"art/quijote_gana.webp",lose:"art/quijote_pierde.webp"},
+  S:{base:"art/sancho.webp",win:"art/sancho_gana.webp",lose:"art/sancho_pierde.webp"},
+  bg:{intro:"art/bg_dia.webp",group:"art/bg_estudio.webp"}
+};
+
+/* ---------- Rondas ----------
+ w = quién habla; d = acotación; t = parlamento.
+ fake = Frestón puso esta línea en la boca equivocada (from = quién la dice de verdad);
+ trap = línea real que parece sospechosa (why = por qué es real).
+ bonus = pregunta de la balanza (qué mueve a uno de los dos); mirror = lo que ve cada uno; mix = las miradas se contagian. */
+const ROUNDS=[
+ {ep:"Los molinos",cap:"Capítulo VIII",bg:"art/bg_r1_molinos.webp",
+  setup:"En el campo de Montiel aparecen treinta o cuarenta molinos de viento.",
+  panels:[
+   {w:"Q",t:"—¿Ves allí, amigo Sancho, aquellos desaforados gigantes? Con ellos pienso hacer batalla y quitarles a todos la vida."},
+   {w:"S",t:"—¿Qué gigantes? Mire vuestra merced que aquellos no son gigantes, sino molinos de viento, y lo que parecen brazos son las aspas."},
+   {w:"S",fake:1,from:"Q",t:"—¡Oh señora Dulcinea, socorredme en este trance! A vos me encomiendo de todo corazón."},
+   {w:"Q",d:"desde el suelo, maltrecho",t:"—Calla, que las cosas de la guerra cambian sin parar. El sabio Frestón volvió estos gigantes en molinos para quitarme la gloria."},
+   {w:"S",d:"levantándolo",t:"—¡Válame Dios! ¿No le dije yo a vuestra merced que mirase bien lo que hacía?"}],
+  why:"Encomendarse a Dulcinea antes de la batalla es cosa de Don Quijote. Sancho no pelea: nombra lo que ve y después le recuerda que le avisó.",
+  scene:"Sancho ve molinos. Don Quijote ve gigantes, y cuando la realidad lo derriba, culpa a Frestón.",
+  mirror:{q:"Gigantes: una batalla justa para ganar fama.",s:"Molinos: aspas que mueve el viento."},
+  bonus:{who:"Q",ask:"¿Qué mueve a Don Quijote a embestir?",opts:["Ganar fama y quitar mala gente de la tierra","Conseguir algo para comer","Demostrar que Sancho se equivoca"],ok:0}},
+ {ep:"La venta",cap:"Capítulos XVI–XVII",clean:1,bg:"art/bg_r2_venta.webp",
+  setup:"Llegan a una venta del camino. Don Quijote ve otra cosa.",
+  panels:[
+   {w:"Q",d:"al llegar",t:"—Mira, Sancho, qué castillo tan principal se nos ofrece para pasar la noche."},
+   {w:"Q",d:"en voz baja, de noche",t:"—La hija del señor de este castillo se ha enamorado de mí y vendrá a verme en secreto."},
+   {w:"S",d:"dolorido",t:"—Yo no sé de castillos: sé que me molieron a palos y que no pegué un ojo en toda la noche."},
+   {w:"Q",d:"al ventero",t:"—No pienso pagaros: nunca he leído que un caballero andante pagase posada."},
+   {w:"S",d:"después del manteo",t:"—Venta es, y no castillo. En los castillos no mantean a los escuderos."}],
+  why:"Frestón no tocó nada. Don Quijote vive la venta como castillo y Sancho paga el costo con el cuerpo.",
+  scene:"Sancho ve el lugar como es, y las consecuencias de la fantasía caen sobre él.",
+  mirror:{q:"Un castillo con damas enamoradas, donde un caballero no paga.",s:"Una venta con palos, una cuenta y una manta."},
+  bonus:{who:"S",ask:"¿Por qué Sancho insiste en que es una venta?",opts:["Porque juzga por lo que le pasa en el cuerpo","Porque quiere quedarse a vivir ahí","Porque lo leyó en los libros de caballerías"],ok:0}},
+ {ep:"Los batanes",cap:"Capítulo XX",bg:"art/bg_r3_batanes.webp",
+  setup:"De noche, en el bosque, se oye un estruendo de golpes y agua.",
+  panels:[
+   {w:"Q",t:"—Esta aventura está guardada para mí. Espérame tres días y, si no vuelvo, ve a contárselo a Dulcinea."},
+   {w:"S",d:"atando a escondidas las patas de Rocinante",t:"—Mire, señor: el caballo no se puede mover. Será que el cielo no quiere que vaya."},
+   {w:"S",t:"—Para pasar la noche le contaré un cuento: había un pastor que tenía que pasar trescientas cabras por un río…"},
+   {w:"Q",fake:1,from:"S",d:"al amanecer, viendo los mazos",t:"—¡Ja, ja, ja! ¡Eran batanes! Y nosotros toda la noche temblando."},
+   {w:"Q",d:"enojado, alzando la lanza",t:"—¿Os burláis de mí? Si esto fueran gigantes, ¿no habría tenido yo ánimo para acometerlos?"}],
+  why:"Reírse de los batanes es de Sancho. Don Quijote no se ríe: se ofende y le da dos golpes con la lanza.",
+  scene:"El misterio lo resuelve la realidad. Sancho la celebra con humor, aunque el miedo también era suyo.",
+  mirror:{q:"Un peligro misterioso: la gran aventura que lo espera.",s:"Ruido en la oscuridad: mejor esperar a que amanezca."},
+  bonus:{who:"S",ask:"¿Por qué Sancho le ata las patas a Rocinante?",opts:["Por miedo a quedarse solo en la oscuridad","Para quedarse con el caballo","Porque cree que es una prueba de encantadores"],ok:0}},
+ {ep:"El yelmo de Mambrino",cap:"Capítulo XXI",bg:"art/bg_r4_yelmo.webp",
+  setup:"Bajo la lluvia viene un barbero con su bacía en la cabeza.",
+  panels:[
+   {w:"Q",t:"—¿Ves aquel caballero que viene hacia nosotros con un yelmo de oro? Es el yelmo de Mambrino."},
+   {w:"S",t:"—Lo que yo veo es un hombre sobre un asno pardo, con una cosa que brilla en la cabeza. Para mí, una bacía de barbero."},
+   {w:"Q",d:"poniéndose la pieza",t:"—Le falta la mitad, pero sin duda es el famoso yelmo."},
+   {w:"S",fake:1,from:"Q",t:"—No es bacía: algún encantador la disfrazó así para que nadie reconozca su gran valor."},
+   {w:"S",trap:1,why:"Es real: Sancho es práctico y cambia los aparejos de su burro por los del barbero.",d:"mirando el asno del barbero",t:"—Ya que su dueño huyó, me quedo con estos aparejos: son mucho mejores que los míos."}],
+  why:"Echarles la culpa a los encantadores es un recurso típico de Don Quijote. Sancho, práctico, aprovecha los aparejos del barbero.",
+  scene:"Sancho no le cree, pero tampoco lo deja solo. Más adelante la discusión vuelve a la venta como baciyelmo.",
+  mirror:{q:"El yelmo de oro de Mambrino.",s:"Una bacía de barbero… y unos buenos aparejos para su burro."},
+  mix:"Las miradas se mezclan: más adelante, en la venta, la discusión termina en un «baciyelmo», ni del todo bacía ni del todo yelmo.",
+  bonus:{who:"Q",ask:"¿Por qué Don Quijote se queda con la bacía?",opts:["Porque para él es un objeto heroico de los libros","Porque la necesita para afeitarse","Porque Sancho se la pidió"],ok:0}},
+ {ep:"Los galeotes",cap:"Capítulo XXII",bg:"art/bg_r5_galeotes.webp",
+  setup:"Por el camino real viene una cadena de presos que van a galeras.",
+  panels:[
+   {w:"Q",t:"—Decidme, señores: ¿por qué culpa vais así encadenados?"},
+   {w:"S",trap:1,why:"Es real: Sancho anticipa las consecuencias y avisa de la Santa Hermandad.",t:"—Mire, señor, que es gente condenada por el rey. Si los suelta, nos va a perseguir la Santa Hermandad."},
+   {w:"Q",t:"—Duro caso es hacer esclavos a los que Dios y la naturaleza hicieron libres. Soltadlos de buen grado."},
+   {w:"S",fake:1,from:"Q",d:"a los presos liberados",t:"—Ahora que sois libres, id cargados con esta cadena a El Toboso y presentaos ante la señora Dulcinea."},
+   {w:"S",d:"después de la pedrada",t:"—Retirémonos a Sierra Morena antes de que la Hermandad nos encuentre."}],
+  why:"Mandar a los liberados a rendir homenaje a Dulcinea es cosa de Don Quijote. Sancho anticipa las consecuencias y propone esconderse.",
+  scene:"La decisión de liberarlos nace del ideal, aunque Sancho acierte con las consecuencias.",
+  mirror:{q:"Hombres libres injustamente encadenados.",s:"Delincuentes del rey, y problemas seguros con la Hermandad."},
+  bonus:{who:"Q",ask:"¿Qué razón da Don Quijote para liberar a los presos?",opts:["Que es duro hacer esclavos a los que nacieron libres","Que le pagaron por hacerlo","Que quería sumarlos a su ejército"],ok:0}},
+ {ep:"Sierra Morena",cap:"Capítulos XXV–XXVI",bg:"art/bg_r6_morena.webp",
+  setup:"En la sierra, Don Quijote decide imitar a los caballeros enamorados.",
+  panels:[
+   {w:"Q",t:"—Quiero imitar a Amadís y hacer aquí penitencia por mi señora Dulcinea."},
+   {w:"Q",d:"dando volteretas",t:"—Así verás, Sancho, las locuras que hago por ella, para que se las cuentes."},
+   {w:"Q",fake:1,from:"S",t:"—¿La hija de Lorenzo Corchuelo? ¡La conozco bien! Tira la barra como el mozo más forzudo del pueblo, y de dama tiene poco."},
+   {w:"Q",trap:1,why:"Es real: Don Quijote sabe que Dulcinea es una figura que él imagina.",t:"—Para lo que yo quiero a Dulcinea, vale tanto como la más alta princesa: yo la pinto en mi imaginación como la deseo."},
+   {w:"S",t:"—Iré a llevarle la carta, aunque no me gusta dejar solo a vuestra merced en estas peñas."}],
+  why:"Conocer a Aldonza Lorenzo como una labradora forzuda es aporte de Sancho. Lo que parecía sospechoso, que Don Quijote admita imaginar a Dulcinea, es real.",
+  scene:"Sancho aporta la persona real, pero Don Quijote construye su ideal a conciencia.",
+  mirror:{q:"Dulcinea: la dama más alta, pintada en su imaginación.",s:"Aldonza Lorenzo: una labradora forzuda del pueblo."},
+  bonus:{who:"Q",ask:"¿Cómo piensa Don Quijote a Dulcinea?",opts:["Como un ideal que imagina a partir de una mujer real","Como una princesa que conoció en la corte","Como alguien que nunca existió"],ok:0}},
+ {ep:"Dorotea y Micomicona",cap:"Capítulos XXIX–XXXI",bg:"art/bg_r7_micomicona.webp",
+  setup:"Dorotea, disfrazada de princesa Micomicona, le pide ayuda a Don Quijote.",
+  panels:[
+   {w:"S",trap:1,why:"Es real: Sancho se ilusiona por interés, no por ideal.",d:"aparte, frotándose las manos",t:"—¡Un reino! Si mi amo se casa con la princesa, a mí me tocará una ínsula para gobernar."},
+   {w:"Q",t:"—Alta señora, no descansaré hasta vengaros del gigante que os quitó el reino."},
+   {w:"S",fake:1,from:"Q",d:"de rodillas ante la princesa",t:"—Juro por la orden de caballería que recibí no emprender otra aventura hasta devolveros vuestro reino."},
+   {w:"S",trap:1,why:"Es real: Sancho vive pendiente de la ínsula que le prometieron.",t:"—Y no se olvide vuestra merced de la ínsula que me tiene prometida, que bien ganada la tengo."},
+   {w:"Q",t:"—Primero está la palabra dada a esta princesa. Lo demás, a su tiempo."}],
+  why:"Jurar «por la orden de caballería que recibí» solo puede hacerlo Don Quijote: Sancho nunca fue armado caballero. Sus otros parlamentos eran reales: su ambición es concreta, pero depende de una ficción.",
+  scene:"Acá la ficción contagia: Sancho también se mueve por una promesa.",
+  mirror:{q:"Una princesa en apuros: un deber de caballero.",s:"Un reino por repartir: la ínsula que le prometieron."},
+  mix:"Las miradas se contagian: Sancho cree en la ficción porque le conviene. Su sentido práctico se apoya en un sueño.",
+  bonus:{who:"S",ask:"¿Qué mueve a Sancho a seguir a la princesa?",opts:["La esperanza concreta de gobernar una ínsula","El deber de caballero andante","El amor por Dulcinea"],ok:0}},
+ {ep:"El regreso enjaulado",cap:"Capítulos XLVI–XLIX",clean:1,bg:"art/bg_r8_jaula.webp",
+  setup:"Unos conocidos disfrazados llevan a Don Quijote en una jaula, sobre un carro de bueyes.",
+  panels:[
+   {w:"Q",d:"dentro de la jaula",t:"—Sin duda voy encantado, como tantos caballeros de los libros."},
+   {w:"S",trap:1,why:"Es real: Sancho reconoce al cura y al barbero y sospecha de la burla.",d:"en voz baja",t:"—Señor, esas caras y esas voces son del cura y del barbero de nuestro lugar. Esto es una burla."},
+   {w:"Q",trap:1,why:"Es real: así explica Don Quijote que los encantadores imiten voces y rostros.",t:"—Los encantadores toman la figura que quieren: pueden imitar las voces y los rostros de nuestros amigos."},
+   {w:"S",t:"—Dígame: ¿tiene ganas de comer y de dormir, como cualquier cristiano? Entonces no va encantado."},
+   {w:"Q",t:"—Sí tengo, pero los encantos de ahora no son como los de antes. Iré con paciencia hasta que se acabe el hechizo."}],
+  why:"Frestón no tocó nada. Sancho lee la burla y la discute con pruebas del cuerpo; Don Quijote la explica con un encantamiento hasta el final de la primera parte.",
+  scene:"Sancho ve la jugada, pero no puede cambiar el desenlace.",
+  mirror:{q:"Un encantamiento, como los de los libros.",s:"Una burla del cura y del barbero."},
+  mix:"Las miradas se cruzan: Don Quijote acepta las pruebas de Sancho (tiene hambre y sueño), pero las acomoda a su ideal: «los encantos de ahora no son como los de antes».",
+  bonus:{who:"S",ask:"¿Con qué argumento Sancho pone en duda el encantamiento?",opts:["Con pruebas del cuerpo: el hambre y el sueño","Con citas de libros de caballerías","Con un hechizo contrario"],ok:0}}
+];
+const N=ROUNDS.length,LIMIT=50;
+const FAKE=ROUNDS.map(r=>r.panels.findIndex(p=>p.fake));
+/* resultados: 0 acertó · 1 acusó otro globo · 2 dijo "no tocó nada" y había impostor · 3 acusó en ronda limpia · 4 se acabó el tiempo · 5 no jugada */
+
+/* ---------- Paleta que acompaña el recorrido ---------- */
+const THEMES={
+  intro:["#E8923A","#B9472B","rgba(255,236,190,.55)"],          /* mañana manchega: dorado y terracota */
+  r0:["#E6A93F","#B8651F","rgba(255,244,200,.55)"],             /* molinos: trigo al sol */
+  r1:["#E07B45","#9E3B26","rgba(255,220,180,.45)"],             /* venta: tarde de tejas */
+  r2:["#36508F","#1A1F4D","rgba(255,190,210,.30)"],             /* batanes: noche que amanece */
+  r3:["#4E9C8E","#2A5E57","rgba(220,255,240,.40)"],             /* yelmo: lluvia y arcoíris */
+  r4:["#D9733A","#8F3420","rgba(255,220,170,.45)"],             /* galeotes: polvo ocre */
+  r5:["#C9785A","#6E3B33","rgba(255,210,190,.40)"],             /* Sierra Morena: granito rosado */
+  r6:["#D2729E","#6E3A93","rgba(255,220,250,.50)"],             /* Micomicona: rosa mágico */
+  r7:["#E57A3C","#5E2B63","rgba(255,200,150,.45)"],             /* jaula: atardecer que se vuelve violeta */
+  win:["#F0B43C","#B86A1A","rgba(255,250,210,.65)"],            /* final: Frestón derrotado */
+  lose:["#6B3FA8","#2A1650","rgba(200,160,255,.35)"],           /* final: gana Frestón */
+  group:["#4B2E83","#22144A","rgba(200,170,255,.30)"]           /* estudio de Frestón */
+};
+function setTheme(k){const t=THEMES[k]||THEMES.intro,s=document.body.style;s.setProperty("--bg1",t[0]);s.setProperty("--bg2",t[1]);s.setProperty("--glow",t[2]);document.documentElement.style.background=t[1]}
+
+/* precarga de ilustraciones */
+const preload=[...ROUNDS.map(r=>r.bg),ART.bg.group,ART.F.mad,ART.F.laugh,ART.Q.win,ART.Q.lose,ART.S.win,ART.S.lose,"art/sello_roto.webp","art/vela_apagada.webp"];
+setTimeout(()=>preload.forEach(u=>{const i=new Image();i.src=u}),1200);
+
+/* ---------- Frestón habla ---------- */
+const LINES={
+ intro:["Yo, Frestón, sabio encantador, metí mano en sus diálogos. ¿Los conocés tan bien como creés?",
+        "Molinos, ventas, bacías… Cambié una cosita por aquí y otra por allá. A ver si te das cuenta."],
+ start:["Leé con cuidado. O no.","Esta vez fui sutil.","¿Seguro que eso lo dijo quien creés?","Mis encantamientos no se ven a simple vista.","Hasta Sancho dudaría de esta."],
+ ok:["¡Maldición! Rompiste mi sello.","¿Cómo te diste cuenta? Debe ser obra de otro encantador.","Hmpf. Suerte de principiante.","Lo admito: ese fue un descuido mío."],
+ cleanOk:["Esta vez no toqué nada… y no caíste. Hmpf.","Bien. Ahí todo era verdad. Qué aburrido."],
+ wrongReal:["¡Ja! Acusaste a un inocente. Esa línea era verdad.","Desconfiás de lo que no debías. Una vela menos."],
+ wrongClean:["¡Ja! Ahí no toqué nada. Viste fantasmas, como tu caballero."],
+ missed:["Estaba ahí, delante de tus ojos. ¡Ja!","Te lo cambié en la cara y no lo viste."],
+ time:["El tiempo también es mío.","Se te escurrió el reloj. Una vela menos."],
+ win:["¡Noooo! Me vencieron… por esta vez. Ya volveré con otros encantamientos.","Rompiste mis sellos. Don Quijote tendrá que buscarse otro culpable."],
+ lose:["¡Ja, ja, ja! Las velas se apagaron. Tus recuerdos ahora son míos.","Gané. Y nadie me va a creer culpable, como siempre."],
+ group:["Bienvenidos a mi estudio. Veamos cuántos de mis sellos rompió tu grupo…"]
+};
+function say(t){const p=$("#say");p.textContent=t;p.classList.remove("pop");void p.offsetWidth;p.classList.add("pop")}
+
+/* ---------- Fondo con fundido ---------- */
+let bgFront=$("#bgA"),bgBack=$("#bgB");
+function setBg(src){
+  if(bgFront.getAttribute("src")===src)return;
+  bgBack.src=src;
+  const swap=()=>{bgBack.classList.add("on");bgFront.classList.remove("on");[bgFront,bgBack]=[bgBack,bgFront]};
+  if(bgBack.complete)swap();else bgBack.onload=()=>{bgBack.onload=null;swap()};
+}
+
+/* ---------- Sellos y velas ---------- */
+function buildSeals(){
+  $("#seals").innerHTML=ROUNDS.map((r,i)=>`<img class="seal" data-i="${i}" src="art/sello.webp" alt="">`).join("");
+}
+function setSeal(i,st){const g=document.querySelector(`#seals .seal[data-i="${i}"]`);if(!g)return;g.classList.remove("now","won","lost");if(st)g.classList.add(st);g.src=st==="won"?"art/sello_roto.webp":"art/sello.webp"}
+function resetSeals(){for(let i=0;i<N;i++)setSeal(i,"")}
+function sealLabel(){const w=document.querySelectorAll("#seals .seal.won").length;$("#seals").setAttribute("aria-label",`${w} de 8 sellos rotos`)}
+function drawCandles(n){
+  const box=$("#candles");
+  if(box.children.length!==3)box.innerHTML=[0,1,2].map(()=>`<img class="candle" src="art/vela.webp" alt="">`).join("");
+  [...box.children].forEach((c,i)=>{const out=i>=n;c.classList.toggle("out",out);const s=out?"art/vela_apagada.webp":"art/vela.webp";if(c.getAttribute("src")!==s)c.src=s});
+  box.setAttribute("aria-label",`${n} ${n===1?"vela encendida":"velas encendidas"}`);
+}
+
+/* ---------- Chispas ---------- */
+const stage=$("#stage"),cv=$("#fx"),ctx=cv.getContext("2d");
+let W=0,H=0;
+const parts=[];
+const COL={gold:"255,210,63",violet:"168,120,255",white:"255,255,255"};
+function resize(){const r=stage.getBoundingClientRect(),d=Math.min(2,window.devicePixelRatio||1);W=r.width;H=r.height;cv.width=Math.round(W*d);cv.height=Math.round(H*d);ctx.setTransform(d,0,0,d,0,0)}
+function pt(el,fy){const a=stage.getBoundingClientRect(),b=el.getBoundingClientRect();return [b.left-a.left+b.width/2,b.top-a.top+b.height*(fy==null?.32:fy)]}
+function stream(fromEl,toEl,c,count){
+  if(reduce)return;const [x0,y0]=pt(fromEl),[x1,y1]=pt(toEl);
+  for(let i=0;i<(count||36);i++)parts.push({x0,y0,x1:x1+(Math.random()-.5)*40,y1:y1+(Math.random()-.5)*40,cx:(x0+x1)/2+(Math.random()-.5)*90,cy:Math.min(y0,y1)-50-Math.random()*70,t:-i*.03,sp:.014+Math.random()*.01,c,r:2+Math.random()*2.6,star:Math.random()<.3});
+}
+function burst(el,c,count,fy){
+  if(reduce)return;const [x,y]=pt(el,fy);
+  for(let i=0;i<(count||40);i++){const a=Math.random()*Math.PI*2,d=40+Math.random()*100;parts.push({x0:x,y0:y,x1:x+Math.cos(a)*d,y1:y+Math.sin(a)*d,cx:x+Math.cos(a)*d*.5,cy:y+Math.sin(a)*d*.5-20,t:0,sp:.022+Math.random()*.02,c,r:1.8+Math.random()*2.6,star:Math.random()<.35})}
+}
+function star(x,y,r){ctx.beginPath();for(let k=0;k<8;k++){const a=k*Math.PI/4,rr=k%2?r*.4:r*1.6;ctx.lineTo(x+Math.cos(a)*rr,y+Math.sin(a)*rr)}ctx.closePath();ctx.fill()}
+let running=false;
+function frame(){
+  ctx.clearRect(0,0,W,H);
+  for(let i=parts.length-1;i>=0;i--){
+    const s=parts[i];s.t+=s.sp;if(s.t<0)continue;if(s.t>1){parts.splice(i,1);continue}
+    const u=1-s.t,x=u*u*s.x0+2*u*s.t*s.cx+s.t*s.t*s.x1,y=u*u*s.y0+2*u*s.t*s.cy+s.t*s.t*s.y1,al=Math.sin(s.t*Math.PI);
+    ctx.fillStyle=`rgba(${COL[s.c]},${al*.25})`;ctx.beginPath();ctx.arc(x,y,s.r*3.2,0,6.283);ctx.fill();
+    ctx.fillStyle=`rgba(${COL[s.c]},${al})`;if(s.star)star(x,y,s.r*1.4);else{ctx.beginPath();ctx.arc(x,y,s.r,0,6.283);ctx.fill()}
+  }
+  if(parts.length)requestAnimationFrame(frame);else{running=false;ctx.clearRect(0,0,W,H)}
+}
+function kick(){if(!running&&!reduce&&parts.length){running=true;requestAnimationFrame(frame)}}
+if(window.ResizeObserver)new ResizeObserver(resize).observe(stage);else window.addEventListener("resize",resize);
+resize();
+
+/* ---------- Personajes ---------- */
+const CH={Q:$("#ch-Q"),S:$("#ch-S"),F:$("#ch-F")};
+function pose(k,v){const s=ART[k][v]||ART[k].base;if(CH[k].getAttribute("src")!==s)CH[k].src=s}
+function baseAll(){pose("F","base");pose("Q","base");pose("S","base")}
+function hot(w){stage.classList.toggle("pick",!!w);CH.Q.classList.toggle("hot",w==="Q");CH.S.classList.toggle("hot",w==="S")}
+function anim(el,cls){el.classList.remove(cls);void el.offsetWidth;el.classList.add(cls);setTimeout(()=>el.classList.remove(cls),1000)}
+
+/* ---------- Estado ---------- */
+const screens={intro:$("#s-intro"),game:$("#s-game"),res:$("#s-res"),grp:$("#s-grp")};
+let name="",lives=3,score=0,streak=0,best=0,r=0,sel=-1,locked=false,useTimer=true,tLeft=LIMIT,tHandle=null;
+let outcomes=[],accused=[],bonusRes=[];
+function show(n){
+  Object.entries(screens).forEach(([k,el])=>el.hidden=(k!==n));
+  stopTimer();hot(null);delete stage.dataset.end;baseAll();
+  if(n==="intro"){resetSeals();drawCandles(3);setBg(ART.bg.intro);setTheme("intro");$("#round-tag").textContent="Parte I";say(pick(LINES.intro))}
+  window.scrollTo({top:0,behavior:reduce?"auto":"smooth"});
+}
+
+/* ---------- Tiempo ---------- */
+function stopTimer(){if(tHandle){clearInterval(tHandle);tHandle=null}}
+function drawTimer(){const t=$("#fuse");t.hidden=!useTimer;t.classList.toggle("low",tLeft<=10);t.firstElementChild.style.transform=`scaleX(${Math.max(0,tLeft/LIMIT)})`}
+function startTimer(){
+  stopTimer();tLeft=LIMIT;drawTimer();
+  if(!useTimer)return;
+  tHandle=setInterval(()=>{tLeft-=.25;drawTimer();if(tLeft<=0){stopTimer();if(!locked)resolve(4,-1)}},250);
+}
+
+/* ---------- Juego ---------- */
+$("#start").addEventListener("click",()=>{
+  name=$("#nombre").value.trim()||"Anónimo";
+  useTimer=!$("#notimer").checked;
+  lives=3;score=0;streak=0;best=0;r=0;
+  outcomes=new Array(N).fill(5);accused=new Array(N).fill(-1);bonusRes=new Array(N).fill(-1);
+  show("game");resetSeals();drawCandles(3);
+  renderRound();
+});
+function renderRound(){
+  locked=false;sel=-1;hot(null);baseAll();
+  const R=ROUNDS[r];
+  setBg(R.bg);setTheme("r"+r);
+  $("#round-tag").textContent=`Ronda ${r+1}/8`;
+  $("#r-cap").textContent=R.cap;
+  $("#r-title").textContent=R.ep;
+  $("#r-setup").textContent=R.setup;
+  $("#strip").innerHTML=R.panels.map((p,i)=>`<div class="prow ${p.w.toLowerCase()}" style="--i:${i}"><button type="button" class="panel" data-i="${i}" aria-pressed="false"><img class="ava" src="${FACE[p.w]}" alt=""><span class="bub"><span class="who">${WHO[p.w]}</span><span class="txt">${p.d?`<span class="acot">(${esc(p.d)})</span>`:""}${esc(p.t)}</span></span></button></div>`).join("");
+  $("#actions").hidden=false;$("#fbp").hidden=true;
+  $("#accuse").disabled=true;
+  $("#pick-hint").textContent="Tocá una línea del diálogo para marcarla.";
+  $("#score").textContent=score;
+  $("#combo").textContent=streak>1?`¡Racha ×${streak}!`:"";
+  setSeal(r,"now");sealLabel();
+  say(pick(LINES.start));
+  startTimer();
+}
+$("#strip").addEventListener("click",e=>{
+  if(locked)return;
+  const b=e.target.closest(".panel");if(!b)return;
+  sel=+b.dataset.i;
+  document.querySelectorAll("#strip .panel").forEach(x=>{const on=+x.dataset.i===sel;x.classList.toggle("sel",on);x.setAttribute("aria-pressed",on)});
+  hot(ROUNDS[r].panels[sel].w);
+  $("#accuse").disabled=false;
+  $("#pick-hint").textContent="Confirmá con \"Acusar\", o elegí otra línea.";
+});
+$("#accuse").addEventListener("click",()=>{if(!locked&&sel>=0)resolve(ROUNDS[r].clean?3:(sel===FAKE[r]?0:1),sel)});
+$("#clean").addEventListener("click",()=>{if(!locked)resolve(ROUNDS[r].clean?0:2,-1)});
+function resolve(code,acc){
+  locked=true;stopTimer();hot(null);
+  const R=ROUNDS[r],ok=code===0;
+  outcomes[r]=code;accused[r]=acc;
+  let pts=0;
+  if(ok){streak++;best=Math.max(best,streak);pts=100+Math.round(useTimer?Math.max(0,tLeft)/LIMIT*50:25)+10*Math.min(streak-1,5);score+=pts}else{streak=0;lives--}
+  [...document.querySelectorAll("#strip .panel")].forEach((b,i)=>{
+    b.disabled=true;b.classList.remove("sel");
+    const p=R.panels[i],bub=b.querySelector(".bub");
+    if(i===FAKE[r]){
+      b.classList.add("imp");
+      bub.insertAdjacentHTML("beforeend",`<span class="note">Esto lo dice ${WHO[p.from]}, no ${WHO[p.w]}.</span>`);
+    }else if(i===acc){
+      b.classList.add("wrong");
+      bub.insertAdjacentHTML("beforeend",`<span class="note mute">${esc(p.why||"Esta línea era real.")}</span>`);
+    }else if(p.trap){
+      bub.insertAdjacentHTML("beforeend",`<span class="note mute">${esc(p.why)}</span>`);
+    }
+  });
+  $("#actions").hidden=true;
+  setSeal(r,ok?"won":"lost");sealLabel();
+  const sealEl=document.querySelector(`#seals .seal[data-i="${r}"]`);
+  if(ok){
+    pose("F","mad");anim(CH.F,"hit");
+    burst(CH.F,"gold",46,.3);burst(sealEl,"gold",24,.5);
+    if(FAKE[r]>=0){const f=R.panels[FAKE[r]];stream(CH[f.w],CH[f.from],"gold",40);setTimeout(()=>anim(CH[f.from],"flash"),reduce?0:700)}
+    say(pick(R.clean?LINES.cleanOk:LINES.ok));
+  }else{
+    pose("F","laugh");anim(CH.F,"laugh");
+    burst(CH.F,"violet",44,.3);
+    drawCandles(lives);
+    say(pick(code===4?LINES.time:code===2?LINES.missed:code===3?LINES.wrongClean:LINES.wrongReal));
+  }
+  kick();
+  const box=$("#fbp");box.className="result "+(ok?"ok":"bad");
+  $("#fb-burst").textContent=ok?`+${pts}`:"¡Ja!";
+  $("#fb-v").textContent=ok?(R.clean?"¡Bien! No había impostor.":"¡Sello roto!"):code===4?"Se acabó el tiempo.":code===2?"Sí había un impostor.":code===3?"Esa línea era real.":"No era ese.";
+  $("#fb-why").textContent=R.why;
+  $("#fb-scene").textContent="Para pensar: "+R.scene;
+  box.hidden=false;
+  $("#next").textContent=(lives<=0||r===N-1)?"Ver mi resultado":"Siguiente ronda →";
+  $("#next").hidden=true;$("#mirror").hidden=true;
+  renderBalanza(R);
+  $("#score").textContent=score;
+  $("#combo").textContent=streak>1?`¡Racha ×${streak}!`:"";
+  if(!ok&&!reduce){const s=$("#strip");s.classList.remove("shake");void s.offsetWidth;s.classList.add("shake")}
+  const first=document.querySelector("#bal-opts .bopt");if(first)first.focus({preventScroll:true});
+  box.scrollIntoView({block:"nearest",behavior:reduce?"auto":"smooth"});
+}
+/* ---------- La balanza y el espejo ---------- */
+function renderBalanza(R){
+  const B=R.bonus,order=shuffle([0,1,2]);
+  $("#bal-q").textContent=B.ask;
+  $("#bal-fb").textContent="";$("#bal-fb").className="bfb";
+  $("#bal-opts").innerHTML=order.map(i=>`<button type="button" class="bopt" data-o="${i}">${esc(B.opts[i])}</button>`).join("");
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+$("#bal-opts").addEventListener("click",e=>{
+  const b=e.target.closest(".bopt");if(!b||b.disabled)return;
+  const R=ROUNDS[r],B=R.bonus,o=+b.dataset.o,ok=o===B.ok;
+  bonusRes[r]=ok?1:0;
+  document.querySelectorAll("#bal-opts .bopt").forEach(x=>{x.disabled=true;const k=+x.dataset.o;if(k===B.ok)x.classList.add("right");else if(x===b)x.classList.add("miss")});
+  const fb=$("#bal-fb");
+  if(ok){score+=50;fb.className="bfb ok";fb.textContent=`¡Bien pesado! +50 · Entendiste qué mueve a ${WHO[B.who]}.`;burst(CH[B.who],"gold",30);kick();anim(CH[B.who],"flash")}
+  else{fb.className="bfb bad";fb.textContent="No era eso. Mirá la respuesta marcada en verde."}
+  $("#score").textContent=score;
+  $("#m-q").textContent=R.mirror.q;$("#m-s").textContent=R.mirror.s;
+  const mx=$("#m-mix");mx.hidden=!R.mix;mx.textContent=R.mix||"";
+  $("#mirror").hidden=false;$("#next").hidden=false;
+  $("#next").focus({preventScroll:true});
+  $("#next").scrollIntoView({block:"nearest",behavior:reduce?"auto":"smooth"});
+});
+$("#next").addEventListener("click",()=>{if(lives<=0||r===N-1)finish();else{r++;renderRound();stage.scrollIntoView({block:"start",behavior:reduce?"auto":"smooth"})}});
+
+/* ---------- Resultado ---------- */
+function b64enc(str){const b=new TextEncoder().encode(str);let s="";b.forEach(c=>s+=String.fromCharCode(c));return btoa(s)}
+function b64dec(str){const bin=atob(str.trim());return new TextDecoder().decode(Uint8Array.from(bin,c=>c.charCodeAt(0)))}
+function finish(){
+  const solved=outcomes.filter(o=>o===0).length;
+  let wTrap=0,wPlain=0,missed=0,over=0,tout=0;
+  outcomes.forEach((o,i)=>{
+    if(o===1||o===3){const p=ROUNDS[i].panels[accused[i]];if(p&&p.trap)wTrap++;else if(o===3)over++;else wPlain++}
+    else if(o===2)missed++;else if(o===4)tout++;
+  });
+  const list=[[wTrap,"Te engañan las líneas que salen de su papel","Las líneas reales que parecían falsos te hicieron acusar mal: Sancho también se ilusiona (la ínsula) y Don Quijote también sabe lo que imagina (Dulcinea). Ahí se ve el contagio entre los dos."],
+              [wPlain,"Te cuesta separar las dos voces","Acusaste líneas que eran reales. Repasá quién ve desde el ideal y quién desde lo práctico."],
+              [missed,"Desconfiás poco","Dijiste que Frestón no tocó nada cuando sí había un cambio. Leé cada línea preguntándote si realmente va con quien la dice."],
+              [over,"Desconfiás de todo","Acusaste en escenas donde Frestón no había tocado nada. A veces el texto es simplemente fiel."],
+              [tout,"Te faltó tiempo","Se te acabó la mecha en alguna ronda. Probá jugar sin reloj para leer con calma."]];
+  const won=solved>=5&&lives>0;
+  let title,txt,medal;
+  if(solved>=7&&lives>0){title="Cazador de encantadores";medal="oro";txt="Distinguís quién ve qué y reconocés cuándo las dos miradas se mezclan. Frestón no tiene por dónde."}
+  else{
+    const top=list.reduce((a,b)=>b[0]>a[0]?b:a);
+    if(won){title="Sabueso de la Mancha";medal="plata"}
+    else if(solved>=3){title="Aprendiz de sabueso";medal="bronce"}
+    else{title="Frestón ganó esta vez";medal="freston"}
+    txt=top[0]>0?`${top[1]}. ${top[2]}`:"Seguí leyendo con atención: cada escena muestra quién interpreta desde el ideal y quién desde lo que cuesta.";
+  }
+  $("#res-medal").src=`art/medalla_${medal}.webp`;
+  $("#res-name").textContent=name+(won?" · Frestón derrotado":" · Frestón ganó");
+  $("#res-prof").textContent=title;$("#res-txt").textContent=txt;
+  $("#res-n").textContent=`${solved}/8`;
+  $("#res-pts").textContent=score;
+  $("#res-combo").textContent=`×${best}`;
+  $("#res-lives").textContent=Math.max(0,lives);
+  const bal=bonusRes.filter(x=>x===1).length,balPlayed=bonusRes.filter(x=>x>=0).length;
+  $("#res-bal").textContent=`${bal}/${balPlayed||8}`;
+  if(balPlayed&&bal/balPlayed<.5)txt+=" En la balanza te costó ver qué mueve a cada uno: repasá el retrato de abajo.";
+  else if(balPlayed&&bal===balPlayed)txt+=" Y en la balanza entendiste qué mueve a cada uno en todas las escenas.";
+  $("#res-txt").textContent=txt;
+  $("#ret-table").innerHTML=`<thead><tr><th>Escena</th><th class="q">Don Quijote ve</th><th class="s">Sancho ve</th></tr></thead><tbody>`+
+    ROUNDS.map((R,i)=>`<tr class="${R.mix?"mixrow":""}"><td>${ROMAN[i]}. ${esc(R.ep)}</td><td class="q">${esc(R.mirror.q)}</td><td class="s">${esc(R.mirror.s)}</td></tr>`).join("")+`</tbody>`;
+  $("#res-fb").innerHTML=ROUNDS.map((R,i)=>{
+    const o=outcomes[i],cls=o===5?"na":o===0?"ok":"bad";
+    const tag=o===5?"No jugada":o===0?"Sello roto":o===4?"Sin tiempo":"Error";
+    return `<li class="${cls}"><div class="thumb" style="background-image:url('${R.bg}')"></div><div class="rt"><img src="art/${o===0?"sello_roto":"sello"}.webp" alt=""><h3>${ROMAN[i]}. ${esc(R.ep)}</h3><span class="tag">${tag}</span></div>${o===5?"":`<p>${esc(R.why)}</p>`}</li>`;
+  }).join("");
+  $("#res-code").value=b64enc(JSON.stringify({n:name,o:outcomes,a:accused,b:bonusRes,s:score}));
+  show("res");
+  setBg(ART.bg.intro);
+  outcomes.forEach((o,i)=>setSeal(i,o===0?"won":o===5?"":"lost"));sealLabel();
+  drawCandles(Math.max(0,lives));
+  $("#round-tag").textContent="Final";
+  stage.dataset.end=won?"win":"lose";setTheme(won?"win":"lose");
+  if(won){pose("Q","win");pose("S","win");pose("F","mad")}else{pose("Q","lose");pose("S","lose");pose("F","laugh")}
+  say(pick(won?LINES.win:LINES.lose));
+  setTimeout(()=>{if(won){burst(CH.Q,"gold",50);burst(CH.S,"gold",50)}else burst(CH.F,"violet",60,.3);kick()},400);
+}
+$("#restart").addEventListener("click",()=>show("intro"));
+let tt=null;
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>t.classList.remove("on"),2200)}
+$("#copy-code").addEventListener("click",async()=>{
+  const ta=$("#res-code");
+  try{await navigator.clipboard.writeText(ta.value);toast("Código copiado")}
+  catch(e){ta.focus();ta.select();toast("Seleccioné el código: copialo con Ctrl+C")}
+});
+
+/* ---------- Mapa del grupo ---------- */
+const SAMPLE=[
+ {n:"Ejemplo 1",o:[0,0,0,0,0,0,0,0],a:[-1,-1,-1,-1,-1,-1,-1,-1],s:1100},
+ {n:"Ejemplo 2",o:[0,3,0,0,1,1,0,0],a:[-1,2,-1,-1,1,3,-1,-1],s:620},
+ {n:"Ejemplo 3",o:[0,0,1,1,0,1,5,5],a:[-1,-1,1,4,-1,0,-1,-1],s:290},
+ {n:"Ejemplo 4",o:[0,0,0,4,0,0,1,0],a:[-1,-1,-1,-1,-1,-1,0,-1],s:760},
+ {n:"Ejemplo 5",o:[1,0,0,0,1,1,5,5],a:[1,-1,-1,-1,2,3,-1,-1],s:330},
+ {n:"Ejemplo 6",o:[0,0,0,0,0,1,0,3],a:[-1,-1,-1,-1,-1,3,-1,3],s:690}
+];
+[[1,1,1,1,1,1,1,1],[1,1,0,1,1,0,1,1],[1,0,1,0,1,1,-1,-1],[1,1,1,1,0,1,0,1],[0,1,1,1,0,1,-1,-1],[1,1,1,0,1,1,1,0]].forEach((b,i)=>SAMPLE[i].b=b);
+function parseLine(l){
+  try{
+    const o=JSON.parse(b64dec(l));
+    if(typeof o.n!=="string")return null;
+    if(!Array.isArray(o.o)||o.o.length!==N||!o.o.every(v=>Number.isInteger(v)&&v>=0&&v<=5))return null;
+    if(!Array.isArray(o.a)||o.a.length!==N||!o.a.every(v=>Number.isInteger(v)&&v>=-1&&v<=4))return null;
+    const b=Array.isArray(o.b)&&o.b.length===N&&o.b.every(v=>v===-1||v===0||v===1)?o.b:new Array(N).fill(-1);
+    return {n:o.n.slice(0,40),o:o.o,a:o.a,b,s:typeof o.s==="number"?o.s:0};
+  }catch(e){return null}
+}
+let lastGroup=null;
+function buildGroup(list,isSample){
+  const n=list.length;
+  lastGroup=n?{list,isSample}:null;
+  if(!n){$("#grp-out").hidden=true;resetSeals();return}
+  $("#grp-out").hidden=false;
+  $("#grp-flag").textContent=isSample?"Datos de ejemplo — no son resultados reales":`${n} ${n===1?"persona":"personas"} en el mapa`;
+  const per=ROUNDS.map((R,i)=>{const played=list.filter(l=>l.o[i]!==5);const solved=played.filter(l=>l.o[i]===0).length;return {i,rate:played.length?solved/played.length:null}});
+  const avg=list.reduce((x,l)=>x+l.o.filter(v=>v===0).length,0)/n;
+  const rated=per.filter(p=>p.rate!==null);
+  let hardest=rated.length?rated.reduce((a,b)=>b.rate<a.rate?b:a):null;
+  if(hardest&&hardest.rate===1)hardest=null;
+  const tally={};
+  list.forEach(l=>l.o.forEach((o,i)=>{if((o===1||o===3)&&l.a[i]>=0&&l.a[i]<ROUNDS[i].panels.length){const k=i+"-"+l.a[i];tally[k]=(tally[k]||0)+1}}));
+  const topKey=Object.keys(tally).sort((a,b)=>tally[b]-tally[a])[0];
+  let trapTxt="—",trapSub="línea real más acusada por error";
+  if(topKey){const [ri,pi]=topKey.split("-").map(Number);trapTxt=`${ROMAN[ri]}·${pi+1}`;const t=ROUNDS[ri].panels[pi].t;trapSub=`línea real que engañó a ${tally[topKey]}: “${t.length>60?t.slice(0,60)+"…":t}”`}
+  const broken=per.filter(p=>p.rate!==null&&p.rate>=.5).length;
+  let bOk=0,bAll=0;list.forEach(l=>l.b.forEach(v=>{if(v>=0){bAll++;if(v===1)bOk++}}));
+  const balAvg=bAll?Math.round(bOk/bAll*100)+"%":"—";
+  $("#grp-stats").innerHTML=`
+   <div class="stat"><b>${broken}/8</b><span>sellos rotos por el grupo (los resolvió al menos la mitad)</span></div>
+   <div class="stat"><b>${avg.toFixed(1)}</b><span>escenas resueltas por persona</span></div>
+   <div class="stat"><b style="font-size:1.6rem">${hardest?esc(ROUNDS[hardest.i].ep):"—"}</b><span>escena más difícil${hardest?` (${Math.round(hardest.rate*100)}%)`:""}</span></div>
+   <div class="stat"><b>${esc(trapTxt)}</b><span>${esc(trapSub)}</span></div>
+   <div class="stat"><b>${balAvg}</b><span>aciertos en la balanza (qué mueve a cada uno)</span></div>`;
+  $("#grp-bars").innerHTML=per.map(p=>{
+    const R=ROUNDS[p.i],pct=p.rate===null?0:Math.round(p.rate*100);
+    const errs=list.reduce((c,l)=>{c[l.o[p.i]]=(c[l.o[p.i]]||0)+1;return c},{});
+    const bits=[];
+    if(errs[1])bits.push(`${errs[1]} acusó otra línea`);
+    if(errs[2])bits.push(`${errs[2]} dijo "no tocó nada"`);
+    if(errs[3])bits.push(`${errs[3]} acusó en una escena limpia`);
+    if(errs[4])bits.push(`${errs[4]} sin tiempo`);
+    const bp=list.filter(l=>l.b[p.i]>=0);if(bp.length)bits.push(`balanza: ${Math.round(bp.filter(l=>l.b[p.i]===1).length/bp.length*100)}% entendió qué mueve a ${WHO[R.bonus.who]}`);
+    return `<li><div class="t"><span>${ROMAN[p.i]}. ${esc(R.ep)}${R.clean?` <span class="hint">· sin impostor</span>`:""}</span><span>${p.rate===null?"sin datos":pct+"%"}</span></div><div class="gbar" role="img" aria-label="${pct}% resolvió"><i style="width:${pct}%"></i></div>${bits.length?`<span class="hint">${esc(bits.join(" · "))}</span>`:""}</li>`;
+  }).join("");
+  per.forEach(p=>setSeal(p.i,p.rate===null?"":p.rate>=.5?"won":"lost"));sealLabel();
+  const gw=broken>=5;
+  stage.dataset.end=gw?"win":"lose";
+  if(gw){pose("Q","win");pose("S","win");pose("F","mad")}else{pose("Q","lose");pose("S","lose");pose("F","laugh")}
+  say(broken>=6?"Tu grupo rompió casi todos mis sellos. Esto no quedará así.":broken>=4?`El grupo rompió ${broken} de mis sellos. Todavía me quedan otros.`:`Apenas ${broken} sellos rotos. Mis encantamientos siguen firmes.`);
+}
+$("#grp-build").addEventListener("click",()=>{
+  const lines=$("#codes").value.split(/\n+/).map(l=>l.trim()).filter(Boolean);
+  const seen=new Set(),list=[];let bad=0;
+  lines.forEach(l=>{if(seen.has(l))return;seen.add(l);const o=parseLine(l);if(o)list.push(o);else bad++});
+  $("#grp-msg").textContent=!lines.length?"Pegá al menos un código.":bad?`${bad} ${bad===1?"línea no es":"líneas no son"} un código válido y se ignoró.`:"";
+  buildGroup(list,false);
+});
+$("#grp-sample").addEventListener("click",()=>{$("#grp-msg").textContent="";buildGroup(SAMPLE,true)});
+$("#grp-clear").addEventListener("click",()=>{lastGroup=null;$("#codes").value="";$("#grp-msg").textContent="";$("#grp-out").hidden=true;resetSeals();delete stage.dataset.end;baseAll();say(pick(LINES.group))});
+function goGrp(){
+  show("grp");resetSeals();drawCandles(3);setBg(ART.bg.group);setTheme("group");$("#round-tag").textContent="Grupo";
+  if(lastGroup)buildGroup(lastGroup.list,lastGroup.isSample);else say(pick(LINES.group));
+}
+
+/* ---------- Navegación ---------- */
+$("#nav-intro").addEventListener("click",()=>show("intro"));
+$("#nav-grp").addEventListener("click",goGrp);
+$("#intro-grp").addEventListener("click",goGrp);
+$("#res-grp").addEventListener("click",goGrp);
+
+buildSeals();drawCandles(3);
+show("intro");
+})();
+</script>
+
+</body>
+</html>
